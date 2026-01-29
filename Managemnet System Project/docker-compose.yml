@@ -1,7 +1,6 @@
 services:
   web:
     image: php:8.2-apache
-    container_name: complaint_web
     ports:
       - "8080:80"
     volumes:
@@ -13,26 +12,25 @@ services:
 
   db:
     image: mysql:8.0
-    container_name: complaint_db
     environment:
       MYSQL_ROOT_PASSWORD: rootpass
       MYSQL_DATABASE: complaints_db
       MYSQL_USER: appuser
       MYSQL_PASSWORD: apppass
-    volumes:
-      - db_data:/var/lib/mysql
     ports:
       - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
 
   phpmyadmin:
     image: phpmyadmin:latest
-    container_name: complaint_phpmyadmin
     ports:
       - "8081:80"
     environment:
       PMA_HOST: db
-      PMA_USER: root
-      PMA_PASSWORD: rootpass
+      PMA_PORT: 3306
+    volumes:
+      - ./PhPmyadmin/themes/blueberry:/var/www/html/themes/blueberry
     depends_on:
       - db
 
