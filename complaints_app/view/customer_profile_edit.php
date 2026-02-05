@@ -1,0 +1,12 @@
+<?php
+/*
+    Customer profile page.
+*/
+require_once("view/header.php");
+?>
+
+<h2>Customer Profile</h2>
+
+<p>This page will be built later.</p>
+
+<?php require_once("view/footer.php"); ?>
