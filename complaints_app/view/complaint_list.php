@@ -1,57 +1,142 @@
 <?php
-// Complaint list page.
+// Complaint list page - Oatmeal-inspired design
 // Shows every complaint currently in the database.
 // Data is loaded before this page runs and stored in $complaintList.
 
 require_once("view/header.php");
 ?>
 
-<h2>Complaint List</h2>
+<!-- Page Header -->
+<div class="mb-8">
+    <h1 class="font-serif text-3xl md:text-4xl font-medium text-[#f5f3eb] mb-2">All Tickets</h1>
+    <p class="text-stone-400">View and track all submitted support tickets</p>
+</div>
 
-<!-- Table headers -->
-<table border="1" cellpadding="6">
-    <tr>
-        <th>ID</th>
-        <th>Status</th>
-        <th>Customer</th>
-        <th>Technician</th>
-        <th>Product/Service</th>
-        <th>Complaint Type</th>
-        <th>Description</th>
-        <th>Created</th>
-    </tr>
+<!-- Stats Summary -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+    <?php
+    $totalCount = count($complaintList);
+    $openCount = 0;
+    $closedCount = 0;
+    foreach ($complaintList as $c) {
+        if (strtolower($c["status"]) == "open") $openCount++;
+        else $closedCount++;
+    }
+    ?>
+    <div class="bg-[#1d211a]/60 border border-stone-700/50 rounded-lg p-4">
+        <p class="text-sm text-stone-500 mb-1">Total Tickets</p>
+        <p class="font-serif text-2xl text-[#f5f3eb]"><?php echo $totalCount; ?></p>
+    </div>
+    <div class="bg-[#1d211a]/60 border border-stone-700/50 rounded-lg p-4">
+        <p class="text-sm text-stone-500 mb-1">Open</p>
+        <p class="font-serif text-2xl text-[#d4a84b]"><?php echo $openCount; ?></p>
+    </div>
+    <div class="bg-[#1d211a]/60 border border-stone-700/50 rounded-lg p-4">
+        <p class="text-sm text-stone-500 mb-1">Resolved</p>
+        <p class="font-serif text-2xl text-[#7cb369]"><?php echo $closedCount; ?></p>
+    </div>
+</div>
 
-    <?php foreach ($complaintList as $complaintRow) { ?>
-        <tr>
+<!-- Complaints Table Card -->
+<div class="bg-[#1d211a]/60 border border-stone-700/50 rounded-xl overflow-hidden">
+    <!-- Table Header -->
+    <div class="px-6 py-4 border-b border-stone-700/50">
+        <h2 class="font-serif text-lg text-[#f5f3eb]">Ticket List</h2>
+    </div>
 
-            <!-- Complaint ID from complaints.complaint_id -->
-            <td><?php echo $complaintRow["complaint_id"]; ?></td>
+    <?php if (count($complaintList) > 0) { ?>
+        <!-- Responsive Table Container -->
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-[#151912]">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Customer</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Assigned To</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Product/Service</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Description</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Created</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-stone-700/50">
+                    <?php foreach ($complaintList as $complaintRow) { ?>
+                        <tr class="hover:bg-[#252a21]/50 transition-colors">
+                            <!-- Complaint ID -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-sm font-medium text-[#f5f3eb]">#<?php echo htmlspecialchars($complaintRow["complaint_id"]); ?></span>
+                            </td>
 
-            <!-- Status column is either open or closed -->
-            <td><?php echo $complaintRow["status"]; ?></td>
+                            <!-- Status Badge -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <?php
+                                $status = strtolower($complaintRow["status"]);
+                                $badgeClass = $status == "open"
+                                    ? "bg-[#d4a84b]/15 text-[#d4a84b] border-[#d4a84b]/25"
+                                    : "bg-[#7cb369]/15 text-[#7cb369] border-[#7cb369]/25";
+                                ?>
+                                <span class="inline-flex px-2.5 py-1 text-xs font-medium rounded-full border <?php echo $badgeClass; ?>">
+                                    <?php echo htmlspecialchars(ucfirst($complaintRow["status"])); ?>
+                                </span>
+                            </td>
 
-            <!-- Customer name from the customer table -->
-            <td><?php echo $complaintRow["customer_last_name"]; ?>, <?php echo $complaintRow["customer_first_name"]; ?></td>
+                            <!-- Customer Name -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-sm text-stone-300"><?php echo htmlspecialchars($complaintRow["customer_last_name"]); ?>, <?php echo htmlspecialchars($complaintRow["customer_first_name"]); ?></span>
+                            </td>
 
-            <!-- Technician name might be blank if unassigned -->
-            <td>
-                <?php echo $complaintRow["employee_last_name"]; ?>
-                <?php if ($complaintRow["employee_last_name"] != "") { ?>,<?php } ?>
-                <?php echo $complaintRow["employee_first_name"]; ?>
-            </td>
+                            <!-- Technician Name -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <?php if (!empty($complaintRow["employee_last_name"])) { ?>
+                                    <span class="text-sm text-stone-300"><?php echo htmlspecialchars($complaintRow["employee_last_name"]); ?>, <?php echo htmlspecialchars($complaintRow["employee_first_name"]); ?></span>
+                                <?php } else { ?>
+                                    <span class="text-sm text-stone-500 italic">Unassigned</span>
+                                <?php } ?>
+                            </td>
 
-            <!-- Lookup names from the products_services and complaint_types tables -->
-            <td><?php echo $complaintRow["product_service_name"]; ?></td>
-            <td><?php echo $complaintRow["complaint_type_name"]; ?></td>
+                            <!-- Product/Service -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-sm text-stone-400"><?php echo htmlspecialchars($complaintRow["product_service_name"]); ?></span>
+                            </td>
 
-            <!-- Complaint description typed by the customer -->
-            <td><?php echo $complaintRow["description"]; ?></td>
+                            <!-- Complaint Type -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-sm text-stone-400"><?php echo htmlspecialchars($complaintRow["complaint_type_name"]); ?></span>
+                            </td>
 
-            <!-- Auto timestamp -->
-            <td><?php echo $complaintRow["created_at"]; ?></td>
+                            <!-- Description (truncated) -->
+                            <td class="px-6 py-4">
+                                <p class="text-sm text-stone-400 max-w-xs truncate" title="<?php echo htmlspecialchars($complaintRow["description"]); ?>">
+                                    <?php echo htmlspecialchars($complaintRow["description"]); ?>
+                                </p>
+                            </td>
 
-        </tr>
+                            <!-- Created Date -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-sm text-stone-500"><?php echo htmlspecialchars($complaintRow["created_at"]); ?></span>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+        </div>
+    <?php } else { ?>
+        <!-- Empty State -->
+        <div class="text-center py-12 px-6">
+            <svg class="w-12 h-12 text-stone-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <h3 class="font-serif text-lg text-stone-300 mb-2">No tickets yet</h3>
+            <p class="text-sm text-stone-500 mb-4">When support tickets are submitted, they'll appear here.</p>
+            <a href="index.php?action=enter_complaint" class="inline-flex items-center gap-2 bg-[#1d211a] hover:bg-[#252a21] text-[#f5f3eb] px-4 py-2 rounded-lg text-sm font-medium border border-stone-600 hover:border-stone-500 transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Submit a Ticket
+            </a>
+        </div>
     <?php } ?>
-</table>
+</div>
 
 <?php require_once("view/footer.php"); ?>

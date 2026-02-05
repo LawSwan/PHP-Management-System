@@ -1,23 +1,32 @@
 /**
- * VelocityNet Complaint Management System - Main JavaScript
- * Handles interactions, form validation, and dynamic updates
+ * Complaint Management System - Main JavaScript
+ * Oatmeal-inspired design - Handles interactions and UI
  */
 
 // Global app object
-const VelocityNet = {
+const ComplaintsApp = {
     // Initialize the application
     init() {
         this.bindEvents();
         this.initializeComponents();
-        console.log('VelocityNet complaint system initialized');
+        console.log('Complaints system initialized');
     },
 
     // Bind event listeners
     bindEvents() {
         // Mobile menu toggle
-        const mobileMenuButton = document.querySelector('.mobile-menu-button');
-        if (mobileMenuButton) {
-            mobileMenuButton.addEventListener('click', this.toggleMobileMenu);
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                // Animate icon
+                const icon = mobileMenuBtn.querySelector('svg');
+                if (icon) {
+                    icon.classList.toggle('rotate-90');
+                }
+            });
         }
 
         // Form validation
@@ -37,6 +46,20 @@ const VelocityNet = {
         confirmButtons.forEach(button => {
             button.addEventListener('click', this.confirmAction);
         });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', (e) => {
+                const href = anchor.getAttribute('href');
+                if (href !== '#') {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
     },
 
     // Initialize components
@@ -44,14 +67,24 @@ const VelocityNet = {
         this.initTooltips();
         this.initDataTables();
         this.initFormEnhancements();
+        this.initAnimations();
     },
 
-    // Mobile menu toggle
-    toggleMobileMenu(e) {
-        e.preventDefault();
-        const menu = document.querySelector('.mobile-menu');
-        if (menu) {
-            menu.classList.toggle('hidden');
+    // Initialize scroll animations
+    initAnimations() {
+        // Fade in elements on scroll
+        const fadeElements = document.querySelectorAll('[data-animate]');
+        if (fadeElements.length > 0 && 'IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-in');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            fadeElements.forEach(el => observer.observe(el));
         }
     },
 
@@ -68,28 +101,30 @@ const VelocityNet = {
 
         // Validate required fields
         requiredFields.forEach(field => {
+            field.classList.remove('border-red-500', 'border-[#c75d5d]');
+
             if (!field.value.trim()) {
-                VelocityNet.showFieldError(field, 'This field is required');
+                ComplaintsApp.showFieldError(field, 'This field is required');
                 isValid = false;
-            } else if (field.type === 'email' && !VelocityNet.isValidEmail(field.value)) {
-                VelocityNet.showFieldError(field, 'Please enter a valid email address');
+            } else if (field.type === 'email' && !ComplaintsApp.isValidEmail(field.value)) {
+                ComplaintsApp.showFieldError(field, 'Please enter a valid email address');
                 isValid = false;
             }
         });
 
         if (!isValid) {
             e.preventDefault();
-            VelocityNet.showAlert('error', 'Please fix the errors below and try again.');
+            ComplaintsApp.showAlert('error', 'Please fix the errors below and try again.');
         }
     },
 
     // Show field error
     showFieldError(field, message) {
         const errorElement = document.createElement('div');
-        errorElement.className = 'form-error';
+        errorElement.className = 'form-error text-[#c75d5d] text-sm mt-1';
         errorElement.textContent = message;
-        
-        field.classList.add('border-red-500');
+
+        field.classList.add('border-[#c75d5d]');
         field.parentNode.appendChild(errorElement);
     },
 
@@ -105,7 +140,7 @@ const VelocityNet = {
         const alert = e.target.closest('.alert');
         if (alert) {
             alert.style.opacity = '0';
-            alert.style.transform = 'translateX(100%)';
+            alert.style.transform = 'translateY(-10px)';
             setTimeout(() => {
                 alert.remove();
             }, 300);
@@ -124,14 +159,16 @@ const VelocityNet = {
 
     // Show dynamic alert
     showAlert(type, message) {
-        const alertContainer = document.querySelector('.alert-container') || document.body;
+        const alertContainer = document.querySelector('.alert-container') || document.querySelector('main');
+        if (!alertContainer) return;
+
         const alertElement = document.createElement('div');
-        
-        const alertClasses = {
-            'success': 'alert alert-success',
-            'error': 'alert alert-error',
-            'warning': 'alert alert-warning',
-            'info': 'alert alert-info'
+
+        const alertStyles = {
+            'success': 'bg-[#7cb369]/10 border-[#7cb369]/20 text-[#7cb369]',
+            'error': 'bg-[#c75d5d]/10 border-[#c75d5d]/20 text-[#c75d5d]',
+            'warning': 'bg-[#d4a84b]/10 border-[#d4a84b]/20 text-[#d4a84b]',
+            'info': 'bg-[#6b9dad]/10 border-[#6b9dad]/20 text-[#6b9dad]'
         };
 
         const icons = {
@@ -141,26 +178,24 @@ const VelocityNet = {
             'info': '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'
         };
 
-        alertElement.className = alertClasses[type] || alertClasses['info'];
+        alertElement.className = `flex items-center gap-3 p-4 rounded-lg border mb-4 transition-all duration-300 ${alertStyles[type] || alertStyles['info']}`;
         alertElement.innerHTML = `
             ${icons[type] || icons['info']}
-            <div>
-                <p class="text-sm">${message}</p>
-            </div>
-            <button type="button" class="ml-auto -mx-1.5 -my-1.5 rounded-lg p-1.5 inline-flex h-8 w-8 hover:bg-gray-700" onclick="this.parentElement.remove()">
+            <p class="text-sm flex-1">${message}</p>
+            <button type="button" class="hover:opacity-70 transition-opacity" onclick="this.parentElement.remove()">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
         `;
 
-        alertContainer.appendChild(alertElement);
+        alertContainer.insertBefore(alertElement, alertContainer.firstChild);
 
         // Auto-dismiss after 5 seconds
         setTimeout(() => {
             if (alertElement.parentNode) {
                 alertElement.style.opacity = '0';
-                alertElement.style.transform = 'translateX(100%)';
+                alertElement.style.transform = 'translateY(-10px)';
                 setTimeout(() => {
                     alertElement.remove();
                 }, 300);
@@ -184,20 +219,22 @@ const VelocityNet = {
         tooltip.textContent = e.target.getAttribute('data-tooltip');
         tooltip.style.cssText = `
             position: absolute;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.875rem;
+            background: #1d211a;
+            color: #f5f3eb;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
             z-index: 1000;
             pointer-events: none;
+            border: 1px solid #333430;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.2);
         `;
 
         document.body.appendChild(tooltip);
 
         const rect = e.target.getBoundingClientRect();
         tooltip.style.left = rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2) + 'px';
-        tooltip.style.top = rect.top - tooltip.offsetHeight - 5 + 'px';
+        tooltip.style.top = rect.top - tooltip.offsetHeight - 8 + window.scrollY + 'px';
 
         e.target._tooltip = tooltip;
     },
@@ -224,6 +261,7 @@ const VelocityNet = {
         const headers = table.querySelectorAll('th[data-sortable]');
         headers.forEach(header => {
             header.style.cursor = 'pointer';
+            header.classList.add('hover:text-[#f5f3eb]', 'transition-colors');
             header.addEventListener('click', () => {
                 this.sortTable(table, header);
             });
@@ -246,29 +284,26 @@ const VelocityNet = {
         const isAscending = !header.classList.contains('sort-desc');
 
         rows.sort((a, b) => {
-            const aText = a.children[index].textContent.trim();
-            const bText = b.children[index].textContent.trim();
-            
-            // Try to parse as numbers
+            const aText = a.children[index]?.textContent.trim() || '';
+            const bText = b.children[index]?.textContent.trim() || '';
+
             const aNum = parseFloat(aText);
             const bNum = parseFloat(bText);
-            
+
             if (!isNaN(aNum) && !isNaN(bNum)) {
                 return isAscending ? aNum - bNum : bNum - aNum;
             }
-            
-            return isAscending ? 
-                aText.localeCompare(bText) : 
+
+            return isAscending ?
+                aText.localeCompare(bText) :
                 bText.localeCompare(aText);
         });
 
-        // Update header sort indicator
         table.querySelectorAll('th').forEach(th => {
             th.classList.remove('sort-asc', 'sort-desc');
         });
         header.classList.add(isAscending ? 'sort-asc' : 'sort-desc');
 
-        // Reorder rows
         rows.forEach(row => tbody.appendChild(row));
     },
 
@@ -276,7 +311,7 @@ const VelocityNet = {
     filterTable(table, searchTerm) {
         const tbody = table.querySelector('tbody');
         const rows = tbody.querySelectorAll('tr');
-        
+
         rows.forEach(row => {
             const text = row.textContent.toLowerCase();
             const matches = text.includes(searchTerm.toLowerCase());
@@ -290,6 +325,8 @@ const VelocityNet = {
         const textareas = document.querySelectorAll('textarea[data-auto-resize]');
         textareas.forEach(textarea => {
             textarea.addEventListener('input', this.autoResizeTextarea);
+            // Initial resize
+            this.autoResizeTextarea({ target: textarea });
         });
 
         // Character counters
@@ -300,26 +337,38 @@ const VelocityNet = {
                 this.addCharacterCounter(element, maxLength);
             }
         });
+
+        // Focus states for form groups
+        const formInputs = document.querySelectorAll('.form-input, input, textarea, select');
+        formInputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.closest('.form-group')?.classList.add('focused');
+            });
+            input.addEventListener('blur', () => {
+                input.closest('.form-group')?.classList.remove('focused');
+            });
+        });
     },
 
     // Auto-resize textarea
     autoResizeTextarea(e) {
-        e.target.style.height = 'auto';
-        e.target.style.height = e.target.scrollHeight + 'px';
+        const textarea = e.target;
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
     },
 
     // Add character counter
     addCharacterCounter(element, maxLength) {
         const counter = document.createElement('div');
-        counter.className = 'character-counter text-sm text-gray-400 mt-1';
+        counter.className = 'text-xs text-stone-500 mt-1 text-right';
         element.parentNode.appendChild(counter);
 
         const updateCounter = () => {
             const remaining = maxLength - element.value.length;
             counter.textContent = `${remaining} characters remaining`;
-            counter.className = remaining < 10 ? 
-                'character-counter text-sm text-red-400 mt-1' : 
-                'character-counter text-sm text-gray-400 mt-1';
+            counter.className = remaining < 20 ?
+                'text-xs text-[#c75d5d] mt-1 text-right' :
+                'text-xs text-stone-500 mt-1 text-right';
         };
 
         element.addEventListener('input', updateCounter);
@@ -328,12 +377,12 @@ const VelocityNet = {
 
     // Loading state management
     showLoading(element) {
-        element.classList.add('loading');
+        element.classList.add('loading', 'opacity-50', 'pointer-events-none');
         element.disabled = true;
     },
 
     hideLoading(element) {
-        element.classList.remove('loading');
+        element.classList.remove('loading', 'opacity-50', 'pointer-events-none');
         element.disabled = false;
     },
 
@@ -348,11 +397,11 @@ const VelocityNet = {
 
         try {
             const response = await fetch(url, { ...defaultOptions, ...options });
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             return await response.json();
         } catch (error) {
             console.error('Request failed:', error);
@@ -364,8 +413,8 @@ const VelocityNet = {
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    VelocityNet.init();
+    ComplaintsApp.init();
 });
 
 // Export for use in other scripts
-window.VelocityNet = VelocityNet;
+window.ComplaintsApp = ComplaintsApp;
