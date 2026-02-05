@@ -11,7 +11,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VelocityNet Complaints</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="assets/styles.css">
+    <link rel="stylesheet" href="frontend/css/main.css">
+    <script src="frontend/js/main.js" defer></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
