@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 05, 2026 at 02:28 PM
+-- Generation Time: Feb 05, 2026 at 03:02 PM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -18,10 +18,10 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `complaints_app`
+-- Database: `velocitynet_db`
 --
-CREATE DATABASE IF NOT EXISTS `complaints_app` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `complaints_app`;
+CREATE DATABASE IF NOT EXISTS `velocitynet_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `velocitynet_db`;
 
 -- --------------------------------------------------------
 
