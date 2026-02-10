@@ -5,7 +5,7 @@
 
 $databaseHost = "localhost";
 $databaseUser = "root";
-$databasePassword = "";
+$databasePassword = "velocity2026";
 $databaseName = "velocitynet_db";
 
 // Open the connection.

@@ -27,7 +27,7 @@ class Database {
     // These are PRIVATE - only this class can see them
     private string $host = "localhost";
     private string $username = "root";
-    private string $password = "";
+    private string $password = "velocity2026";
     private string $database = "velocitynet_db";
 
     // The actual connection - also private (protected from outside code)
