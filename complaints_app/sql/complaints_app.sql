@@ -20,6 +20,7 @@ SET time_zone = "+00:00";
 --
 -- Database: `complaints_app`
 --
+
 CREATE DATABASE IF NOT EXISTS `complaints_app` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `complaints_app`;
 
@@ -28,7 +29,7 @@ USE `complaints_app`;
 --
 -- Table structure for table `complaints`
 --
-
+DROP TABLE IF EXISTS `complaints`;
 CREATE TABLE `complaints` (
   `complaint_id` int(11) NOT NULL,
   `customer_id` int(11) NOT NULL,
@@ -62,7 +63,7 @@ INSERT INTO `complaints` (`complaint_id`, `customer_id`, `employee_id`, `product
 --
 -- Table structure for table `complaint_types`
 --
-
+DROP TABLE IF EXISTS `complaint_types`;
 CREATE TABLE `complaint_types` (
   `complaint_type_id` int(11) NOT NULL,
   `complaint_type_name` varchar(100) NOT NULL
@@ -85,7 +86,7 @@ INSERT INTO `complaint_types` (`complaint_type_id`, `complaint_type_name`) VALUE
 --
 -- Table structure for table `customer`
 --
-
+DROP TABLE IF EXISTS `customer`;
 CREATE TABLE `customer` (
   `customer_id` int(11) NOT NULL,
   `email` varchar(100) NOT NULL,
@@ -110,12 +111,12 @@ INSERT INTO `customer` (`customer_id`, `email`, `first_name`, `last_name`, `stre
 (4, 'wanda.maximoff@email.com', 'Wanda', 'Maximoff', '77 Westview Rd', 'Westview', 'NJ', '07001', '555-0104', 'scarlet1'),
 (5, 'tchalla@email.com', 'T\'Challa', 'Wakanda', '1 Golden City Way', 'Oakland', 'CA', '94601', '555-0105', 'panther1');
 
--- --------------------------------------------------------
+-- --------------------------------------------------------'
 
 --
 -- Table structure for table `employees`
 --
-
+DROP TABLE IF EXISTS `employees`;
 CREATE TABLE `employees` (
   `employee_id` int(11) NOT NULL,
   `user_id` varchar(50) NOT NULL,
@@ -143,7 +144,7 @@ INSERT INTO `employees` (`employee_id`, `user_id`, `employee_password`, `first_n
 --
 -- Table structure for table `products_services`
 --
-
+DROP TABLE IF EXISTS `products_services`;
 CREATE TABLE `products_services` (
   `product_service_id` int(11) NOT NULL,
   `product_service_name` varchar(100) NOT NULL

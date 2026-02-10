@@ -48,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errorMessage .= "Password must contain at least 1 uppercase letter.<br>";
     }
     if (!preg_match('/[a-z]/', $passwordText)) {
-        $errorMessage .= "Passowrd must contain at least 1 uppercase letter.<br>";
+        $errorMessage .= "Passowrd must contain at least 1 lowercase letter.<br>";
     }
     if (!preg_match('/[^a-zA-Z0-9]/', $passwordText)) {
         $errorMessage .= "Password must contain at least 1 special character.<br>";
