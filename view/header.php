@@ -101,9 +101,6 @@
                     <a href="index.php?action=login" class="text-stone-400 hover:text-stone-200 text-sm font-medium transition-colors duration-200">
                         Log in
                     </a>
-                    <a href="index.php?action=register" class="bg-[#1d211a] hover:bg-[#252a21] text-[#f5f3eb] px-4 py-2 rounded-full text-sm font-medium border border-stone-700 hover:border-stone-600 transition-all duration-200">
-                        Get started
-                    </a>
                 </div>
 
                 <!-- Mobile menu button -->
@@ -132,9 +129,6 @@
                 <div class="pt-3 border-t border-stone-800/50 space-y-3">
                     <a href="index.php?action=login" class="block text-stone-400 hover:text-stone-200 text-sm font-medium py-2 transition-colors">
                         Log in
-                    </a>
-                    <a href="index.php?action=register" class="block bg-[#1d211a] text-[#f5f3eb] px-4 py-2 rounded-full text-sm font-medium text-center border border-stone-700 transition-colors">
-                        Get started
                     </a>
                 </div>
             </div>

@@ -42,7 +42,7 @@ if ($action == "") {
         <!-- CTA Buttons -->
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a href="index.php?action=register" class="bg-[#1d211a] hover:bg-[#252a21] text-[#f5f3eb] px-6 py-3 rounded-lg text-sm font-medium border border-stone-600 hover:border-stone-500 transition-all">
-                Get started free
+                Register Now
             </a>
             <a href="index.php?action=sitemap" class="text-stone-400 hover:text-[#f5f3eb] text-sm font-medium flex items-center gap-2 transition-colors">
                 See how it works
