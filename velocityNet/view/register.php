@@ -1,9 +1,70 @@
 <?php
 // Register page.
-// Displays output for this part of the site.
-// Uses controller/model data to fill in the page.
+// Adds a customer account.
 
-require_once("header.php");
+require_once(__DIR__ . "/../controller/customer_controller.php");
+
+$errorMessage = "";
+$successMessage = "";
+
+// form fields
+$emailText = "";
+$firstNameText = "";
+$lastNameText = "";
+$streetText = "";
+$cityText = "";
+$stateText = "";
+$zipCodeText = "";
+$phoneNumberText = "";
+$passwordText = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    $emailText = $_POST["email"] ?? "";
+    $firstNameText = $_POST["first_name"] ?? "";
+    $lastNameText = $_POST["last_name"] ?? "";
+    $streetText = $_POST["street_address"] ?? "";
+    $cityText = $_POST["city"] ?? "";
+    $stateText = $_POST["state"] ?? "";
+    $zipCodeText = $_POST["zip_code"] ?? "";
+    $phoneNumberText = $_POST["phone_number"] ?? "";
+    $passwordText = $_POST["customer_password"] ?? "";
+
+    if ($emailText == "" || $firstNameText == "" || $lastNameText == "" || $passwordText == "") {
+        $errorMessage = "Fill out the required fields.";
+    } else {
+        $ok = CustomerController::addCustomer(
+            $emailText,
+            $firstNameText,
+            $lastNameText,
+            $streetText,
+            $cityText,
+            $stateText,
+            $zipCodeText,
+            $phoneNumberText,
+            $passwordText
+        );
+
+        if ($ok) {
+            $successMessage = "Account created. You can log in now.";
+
+            // clear fields after a successful insert
+            $emailText = "";
+            $firstNameText = "";
+            $lastNameText = "";
+            $streetText = "";
+            $cityText = "";
+            $stateText = "";
+            $zipCodeText = "";
+            $phoneNumberText = "";
+            $passwordText = "";
+        } else {
+            $errorMessage = "Create account failed.";
+        }
+    }
+}
+
+require_once(__DIR__ . "/header.php");
 ?>
 
 <!-- Registration Section -->
@@ -59,6 +120,7 @@ require_once("header.php");
                                     id="email"
                                     name="email"
                                     type="email"
+                                    value="<?php echo htmlspecialchars($emailText); ?>"
                                     required
                                     class="w-full px-4 py-3 bg-[#151912] border border-stone-700 rounded-lg text-[#f5f3eb] placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-[#a8b89a]/30 focus:border-[#a8b89a] transition-all duration-200"
                                     placeholder="you@example.com"
@@ -74,6 +136,7 @@ require_once("header.php");
                                     id="first_name"
                                     name="first_name"
                                     type="text"
+                                    value="<?php echo htmlspecialchars($firstNameText); ?>"
                                     required
                                     class="w-full px-4 py-3 bg-[#151912] border border-stone-700 rounded-lg text-[#f5f3eb] placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-[#a8b89a]/30 focus:border-[#a8b89a] transition-all duration-200"
                                     placeholder="John"
@@ -89,6 +152,7 @@ require_once("header.php");
                                     id="last_name"
                                     name="last_name"
                                     type="text"
+                                    value="<?php echo htmlspecialchars($lastNameText); ?>"
                                     required
                                     class="w-full px-4 py-3 bg-[#151912] border border-stone-700 rounded-lg text-[#f5f3eb] placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-[#a8b89a]/30 focus:border-[#a8b89a] transition-all duration-200"
                                     placeholder="Doe"
@@ -126,6 +190,7 @@ require_once("header.php");
                                     id="street_address"
                                     name="street_address"
                                     type="text"
+                                    value="<?php echo htmlspecialchars($streetText); ?>"
                                     class="w-full px-4 py-3 bg-[#151912] border border-stone-700 rounded-lg text-[#f5f3eb] placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-[#a8b89a]/30 focus:border-[#a8b89a] transition-all duration-200"
                                     placeholder="123 Main Street"
                                 >
@@ -140,6 +205,7 @@ require_once("header.php");
                                     id="city"
                                     name="city"
                                     type="text"
+                                    value="<?php echo htmlspecialchars($cityText); ?>"
                                     class="w-full px-4 py-3 bg-[#151912] border border-stone-700 rounded-lg text-[#f5f3eb] placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-[#a8b89a]/30 focus:border-[#a8b89a] transition-all duration-200"
                                     placeholder="New York"
                                 >
@@ -154,6 +220,7 @@ require_once("header.php");
                                     id="state"
                                     name="state"
                                     type="text"
+                                    value="<?php echo htmlspecialchars($stateText); ?>"
                                     class="w-full px-4 py-3 bg-[#151912] border border-stone-700 rounded-lg text-[#f5f3eb] placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-[#a8b89a]/30 focus:border-[#a8b89a] transition-all duration-200"
                                     placeholder="NY"
                                 >
@@ -168,6 +235,7 @@ require_once("header.php");
                                     id="zip_code"
                                     name="zip_code"
                                     type="text"
+                                    value="<?php echo htmlspecialchars($zipCodeText); ?>"
                                     class="w-full px-4 py-3 bg-[#151912] border border-stone-700 rounded-lg text-[#f5f3eb] placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-[#a8b89a]/30 focus:border-[#a8b89a] transition-all duration-200"
                                     placeholder="10001"
                                 >
@@ -182,6 +250,7 @@ require_once("header.php");
                                     id="phone_number"
                                     name="phone_number"
                                     type="tel"
+                                    value="<?php echo htmlspecialchars($phoneNumberText); ?>"
                                     class="w-full px-4 py-3 bg-[#151912] border border-stone-700 rounded-lg text-[#f5f3eb] placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-[#a8b89a]/30 focus:border-[#a8b89a] transition-all duration-200"
                                     placeholder="(555) 123-4567"
                                 >

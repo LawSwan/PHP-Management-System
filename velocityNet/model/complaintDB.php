@@ -3,7 +3,7 @@
 // Runs SQL queries for this part of the system.
 // Returns results back to controllers.
 
-// Use __DIR__ so this works no matter what file included us.
+
 require_once(__DIR__ . "/Database.php");
 require_once(__DIR__ . "/Complaint.php");
 

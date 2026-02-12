@@ -11,6 +11,8 @@ require_once("header.php");
 
 <h2>Admin Customer List</h2>
 
+<p><a href="admin_customer_add.php">Add Customer</a></p>
+
 <!-- table to display records from the database -->
 <table border="1" cellpadding="6">
     <tr>

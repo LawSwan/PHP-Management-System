@@ -134,6 +134,14 @@ require_once("header.php");
                 </a>
             </li>
             <li>
+                <a href="<?php echo $viewPrefix; ?>admin_customer_add.php" class="flex items-center gap-2 text-sm text-stone-400 hover:text-[#a8b89a] transition-colors py-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                    Add Customer
+                </a>
+            </li>
+            <li>
                 <a href="<?php echo $viewPrefix; ?>admin_employee_list.php" class="flex items-center gap-2 text-sm text-stone-400 hover:text-[#a8b89a] transition-colors py-1">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
