@@ -1,0 +1,101 @@
+<?php
+// Admin Employee Add.
+// Page or helper used by the application.
+
+/*
+    Admin add employee.
+
+    Adds a new technician or administrator.
+*/
+require_once("view/header.php");
+require_once("model/db_employees.php");
+
+$errorMessage = "";
+$successMessage = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    $userIdText = "";
+    $passwordText = "";
+    $firstNameText = "";
+    $lastNameText = "";
+    $emailText = "";
+    $phoneExtensionText = "";
+    $levelText = "";
+
+    if (isset($_POST["user_id"])) $userIdText = $_POST["user_id"];
+    if (isset($_POST["employee_password"])) $passwordText = $_POST["employee_password"];
+    if (isset($_POST["first_name"])) $firstNameText = $_POST["first_name"];
+    if (isset($_POST["last_name"])) $lastNameText = $_POST["last_name"];
+    if (isset($_POST["email"])) $emailText = $_POST["email"];
+    if (isset($_POST["phone_extension"])) $phoneExtensionText = $_POST["phone_extension"];
+    if (isset($_POST["level"])) $levelText = $_POST["level"];
+
+    if ($userIdText == "" || $passwordText == "" || $firstNameText == "" || $lastNameText == "" || $emailText == "" || $levelText == "") {
+        $errorMessage = "Please complete the required fields.";
+    } else {
+
+        $insertWorked = insertEmployee($userIdText, $passwordText, $firstNameText, $lastNameText, $emailText, $phoneExtensionText, $levelText);
+
+        if ($insertWorked == true) {
+            $successMessage = "Employee added.";
+        } else {
+            $errorMessage = "Insert failed.";
+        }
+    }
+}
+?>
+
+<h2>Admin Add Employee</h2>
+
+<?php if ($errorMessage != "") { ?><p><?php echo $errorMessage; ?></p><?php } ?>
+<?php if ($successMessage != "") { ?><p><?php echo $successMessage; ?></p><?php } ?>
+
+<form action="index.php?action=admin_employee_add" method="post">
+
+    <label>User ID</label><br>
+    <input type="text" name="user_id">
+
+    <br><br>
+
+    <label>Password</label><br>
+    <input type="text" name="employee_password">
+
+    <br><br>
+
+    <label>First Name</label><br>
+    <input type="text" name="first_name">
+
+    <br><br>
+
+    <label>Last Name</label><br>
+    <input type="text" name="last_name">
+
+    <br><br>
+
+    <label>Email</label><br>
+    <input type="text" name="email">
+
+    <br><br>
+
+    <label>Phone Extension</label><br>
+    <input type="text" name="phone_extension">
+
+    <br><br>
+
+    <label>Level</label><br>
+    <select name="level">
+        <option value="">Select</option>
+        <option value="administrator">administrator</option>
+        <option value="technician">technician</option>
+    </select>
+
+    <br><br>
+
+    <input type="submit" value="Add Employee">
+
+</form>
+
+<p><a href="index.php?action=admin_employee_list">Back to employee list</a></p>
+
+<?php require_once("view/footer.php"); ?>

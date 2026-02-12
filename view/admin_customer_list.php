@@ -1,0 +1,42 @@
+<?php
+// Admin Customer List.
+// Page or helper used by the application.
+
+/*
+    Admin customer list.
+
+    Shows all customers in the system.
+*/
+require_once("view/header.php");
+require_once("model/db_customers.php");
+
+$customerList = getAllCustomers();
+?>
+
+<h2>Admin Customer List</h2>
+
+<table border="1" cellpadding="6">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>City</th>
+        <th>State</th>
+        <th>Action</th>
+    </tr>
+
+    <?php foreach ($customerList as $customerRow) { ?>
+        <tr>
+            <td><?php echo $customerRow["customer_id"]; ?></td>
+            <td><?php echo $customerRow["last_name"]; ?>, <?php echo $customerRow["first_name"]; ?></td>
+            <td><?php echo $customerRow["email"]; ?></td>
+            <td><?php echo $customerRow["phone_number"]; ?></td>
+            <td><?php echo $customerRow["city"]; ?></td>
+            <td><?php echo $customerRow["state"]; ?></td>
+            <td><a href="index.php?action=admin_customer_edit&customer_id=<?php echo $customerRow["customer_id"]; ?>">Edit</a></td>
+        </tr>
+    <?php } ?>
+</table>
+
+<?php require_once("view/footer.php"); ?>
