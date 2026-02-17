@@ -48,11 +48,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             $level = strtolower(trim($employee->getRole()));
 
+            // Employees table uses values like "administrator" and "technician".
+            // Normalize to app roles: admin / tech.
             $role = "tech";
-            if ($level === "admin") $role = "admin";
+            if ($level === "admin" || $level === "administrator") $role = "admin";
 
             $_SESSION["user_type"] = "employee";
-            $_SESSION["user_id"] = (int)$employee->getEmployeeId();
+            // Store the employee id in session.
+            $_SESSION["employee_id"] = (int)$employee->getEmployeeId();
+            unset($_SESSION["customer_id"]);
             $_SESSION["role"] = $role;
             $_SESSION["display_name"] = $employee->getFirstName() . " " . $employee->getLastName();
 
@@ -72,7 +76,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if ($customer != null && $customer->getPasswordHash() === $passwordText) {
 
                 $_SESSION["user_type"] = "customer";
-                $_SESSION["user_id"] = (int)$customer->getCustomerId();
+                // Store the customer id in session.
+                $_SESSION["customer_id"] = (int)$customer->getCustomerId();
+                unset($_SESSION["employee_id"]);
                 $_SESSION["role"] = "customer";
                 $_SESSION["display_name"] = $customer->getFirstName() . " " . $customer->getLastName();
 

@@ -149,10 +149,10 @@ if (!$isLoggedIn) {
     <!-- Navigation Header -->
     <nav class="border-b border-stone-800/50 sticky top-0 z-50 backdrop-blur-sm bg-[#0d0f0a]/80">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
+            <div class="flex items-center h-16">
 
                 <!-- Left Navigation Links -->
-                <div class="hidden md:flex items-center space-x-6">
+                <div class="hidden md:flex items-center space-x-4 overflow-x-auto whitespace-nowrap pr-4 flex-1 header-scroll">
                     <?php foreach ($leftLinks as $l) { ?>
                         <a href="<?php echo $l["href"]; ?>" class="text-stone-400 hover:text-stone-200 text-sm font-medium transition-colors duration-200">
                             <?php echo $l["label"]; ?>
@@ -161,14 +161,14 @@ if (!$isLoggedIn) {
                 </div>
 
                 <!-- Center Logo -->
-                <div class="absolute left-1/2 transform -translate-x-1/2">
-                    <a href="<?php echo $homeHref; ?>" class="font-serif text-2xl font-medium text-[#f5f3eb] tracking-tight hover:opacity-80 transition-opacity">
+                <div class="flex-none px-3">
+                    <a href="<?php echo $homeHref; ?>" class="font-serif text-2xl font-medium text-[#f5f3eb] tracking-tight hover:opacity-80 transition-opacity whitespace-nowrap">
                         VelocityNet
                     </a>
                 </div>
 
                 <!-- Right Links -->
-                <div class="hidden md:flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-4 pl-4 flex-1 justify-end header-scroll overflow-x-auto whitespace-nowrap">
                     <?php foreach ($rightLinks as $r) { ?>
                         <?php if ($r["type"] === "button") { ?>
                             <a href="<?php echo $r["href"]; ?>" class="bg-[#1d211a] hover:bg-[#252a21] text-[#f5f3eb] px-4 py-2 rounded-full text-sm font-medium border border-stone-700 hover:border-stone-600 transition-all duration-200">

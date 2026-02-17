@@ -44,7 +44,7 @@ require_once("header.php");
 <!-- dropdown list built from database values -->
     <select name="role">
         <option value="">Select role</option>
-        <option value="admin">admin</option>
+        <option value="administrator">administrator</option>
         <option value="technician">technician</option>
     </select><br><br>
 

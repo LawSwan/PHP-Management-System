@@ -14,7 +14,11 @@ class AuthController {
 
     // Is anyone logged in.
     public static function isLoggedIn() {
-        return isset($_SESSION["role"]) && isset($_SESSION["user_id"]);
+        if (!isset($_SESSION["role"])) return false;
+        $role = (string)$_SESSION["role"];
+        if ($role === "customer") return isset($_SESSION["customer_id"]);
+        if ($role === "tech" || $role === "admin") return isset($_SESSION["employee_id"]);
+        return false;
     }
 
     // Return current role or empty string.

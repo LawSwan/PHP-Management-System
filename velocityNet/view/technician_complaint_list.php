@@ -8,7 +8,7 @@ require_once(__DIR__ . "/../controller/complaint_controller.php");
 AuthController::startSession();
 
 $employeeIdNumber = 0;
-if (isset($_SESSION["user_id"])) $employeeIdNumber = (int)$_SESSION["user_id"];
+if (isset($_SESSION["employee_id"])) $employeeIdNumber = (int)$_SESSION["employee_id"];
 $complaintList = ComplaintController::getComplaintsByEmployeeIdWithNames($employeeIdNumber);
 
 require_once("header.php");
@@ -22,8 +22,6 @@ require_once("header.php");
     <p>Missing employee id.</p>
 
 <?php } else { ?>
-
-    <p>Viewing complaints assigned to technician id: <?php echo $employeeIdNumber; ?></p>
 
     <?php if (count($complaintList) == 0) { ?>
 

@@ -88,15 +88,25 @@ class EmployeeDB {
         $conn = $db->getDbConn();
         if ($conn == false) return false;
 
-        
+        // user_id is required by the employees table.
+        // If a value is not collected on the form, build one from the email.
+        $userIdText = strtolower(trim($emailText));
+        $atPos = strpos($userIdText, "@");
+        if ($atPos !== false) $userIdText = substr($userIdText, 0, $atPos);
+        $userIdText = preg_replace("/[^a-z0-9_]/", "", $userIdText);
+        if ($userIdText === "") $userIdText = "user";
+
+        // phone_extension is optional.
+        $phoneExtensionText = "";
+
         $sql = "insert into employees
-                (email, first_name, last_name, role, employee_password)
-                values (?, ?, ?, ?, ?)";
+                (user_id, employee_password, first_name, last_name, email, phone_extension, level)
+                values (?, ?, ?, ?, ?, ?, ?)";
 
         $statement = mysqli_prepare($conn, $sql);
         if ($statement == false) return false;
 
-        mysqli_stmt_bind_param($statement, "sssss", $emailText, $firstNameText, $lastNameText, $roleText, $passwordText);
+        mysqli_stmt_bind_param($statement, "sssssss", $userIdText, $passwordText, $firstNameText, $lastNameText, $emailText, $phoneExtensionText, $roleText);
         return mysqli_stmt_execute($statement);
     }
 
@@ -113,7 +123,7 @@ class EmployeeDB {
             Password is not updated here because the edit form does not include it.
         */
         $sql = "update employees
-                set email = ?, first_name = ?, last_name = ?, role = ?
+                set email = ?, first_name = ?, last_name = ?, level = ?
                 where employee_id = ?";
 
         $statement = mysqli_prepare($conn, $sql);

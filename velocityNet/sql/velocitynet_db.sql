@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 12, 2026 at 12:06 PM
+-- Generation Time: Feb 17, 2026 at 06:36 PM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -41,24 +41,27 @@ CREATE TABLE `complaints` (
   `technician_notes` text DEFAULT NULL,
   `resolution_date` varchar(25) DEFAULT NULL,
   `resolution_notes` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `complaint_image` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `complaints`
 --
 
-INSERT INTO `complaints` (`complaint_id`, `customer_id`, `employee_id`, `product_service_id`, `complaint_type_id`, `description`, `status`, `technician_notes`, `resolution_date`, `resolution_notes`, `created_at`) VALUES
-(1, 1, NULL, 1, 1, 'Internet has been down since last night. Modem lights are on but there is no connection.', 'open', '', '', '', '2026-02-03 00:10:16'),
-(2, 2, 1, 1, 2, 'Fiber speeds are way lower than expected. Multiple speed tests show around 120 Mbps.', 'open', 'Asked customer to test direct to modem and reboot router. Scheduling line test.', '', '', '2026-02-03 00:10:16'),
-(3, 3, 2, 4, 5, 'WiFi router keeps disconnecting every 10 to 20 minutes. Reboot fixes it for a short time.', 'open', 'Checking firmware version. Might swap router if issue continues.', '', '', '2026-02-03 00:10:16'),
-(4, 4, NULL, 2, 3, 'Service drops for a few minutes a couple times per day. Happens mostly in the evening.', 'open', '', '', '', '2026-02-03 00:10:16'),
-(5, 5, 3, 3, 4, 'Charged twice for modem rental this month. Invoice shows duplicate line item.', 'open', 'Reviewed billing history. Escalating to billing team for credit.', '', '', '2026-02-03 00:10:16'),
-(6, 1, 1, 5, 6, 'Installer did not finish setup. Connection works sometimes but drops and the line looks loose outside.', 'closed', 'Visited site and replaced connector. Retested signal levels.', '2026-02-01', 'Customer confirmed stable connection after repair.', '2026-02-03 00:10:16'),
-(7, 2, NULL, 6, 4, 'Late fee applied even though payment was made on time. Bank statement shows it cleared.', 'open', '', '', '', '2026-02-03 00:10:16'),
-(8, 3, 2, 1, 2, 'Speed is fine on Ethernet but WiFi is slow across the apartment.', 'open', 'Recommended moving router location and changing WiFi channel. Offered mesh option.', '', '', '2026-02-03 00:10:16'),
-(9, 1, NULL, 6, 4, 'I was charged way too much', 'open', NULL, NULL, NULL, '2026-02-12 10:08:04'),
-(10, 1, NULL, 1, 3, 'My internet no working', 'open', NULL, NULL, NULL, '2026-02-12 10:38:28');
+INSERT INTO `complaints` (`complaint_id`, `customer_id`, `employee_id`, `product_service_id`, `complaint_type_id`, `description`, `status`, `technician_notes`, `resolution_date`, `resolution_notes`, `created_at`, `complaint_image`) VALUES
+(1, 1, NULL, 1, 1, 'Internet has been down since last night. Modem lights are on but there is no connection.', 'open', '', '', '', '2026-02-03 00:10:16', NULL),
+(2, 2, 1, 1, 2, 'Fiber speeds are way lower than expected. Multiple speed tests show around 120 Mbps.', 'open', 'Asked customer to test direct to modem and reboot router. Scheduling line test.', '', '', '2026-02-03 00:10:16', NULL),
+(3, 3, 2, 4, 5, 'WiFi router keeps disconnecting every 10 to 20 minutes. Reboot fixes it for a short time.', 'open', 'Checking firmware version. Might swap router if issue continues.', '', '', '2026-02-03 00:10:16', NULL),
+(4, 4, NULL, 2, 3, 'Service drops for a few minutes a couple times per day. Happens mostly in the evening.', 'open', '', '', '', '2026-02-03 00:10:16', NULL),
+(5, 5, 3, 3, 4, 'Charged twice for modem rental this month. Invoice shows duplicate line item.', 'open', 'Reviewed billing history. Escalating to billing team for credit.', '', '', '2026-02-03 00:10:16', NULL),
+(6, 1, 1, 5, 6, 'Installer did not finish setup. Connection works sometimes but drops and the line looks loose outside.', 'closed', 'Visited site and replaced connector. Retested signal levels.', '2026-02-01', 'Customer confirmed stable connection after repair.', '2026-02-03 00:10:16', NULL),
+(7, 2, NULL, 6, 4, 'Late fee applied even though payment was made on time. Bank statement shows it cleared.', 'open', '', '', '', '2026-02-03 00:10:16', NULL),
+(8, 3, 2, 1, 2, 'Speed is fine on Ethernet but WiFi is slow across the apartment.', 'open', 'Recommended moving router location and changing WiFi channel. Offered mesh option.', '', '', '2026-02-03 00:10:16', NULL),
+(9, 1, NULL, 6, 4, 'I was charged way too much', 'open', NULL, NULL, NULL, '2026-02-12 10:08:04', NULL),
+(10, 1, 2, 1, 3, 'My internet no working', 'open', NULL, NULL, NULL, '2026-02-12 10:38:28', NULL),
+(11, 1, NULL, 6, 5, 'need help with equipment', 'open', NULL, NULL, NULL, '2026-02-17 14:14:01', NULL),
+(12, 1, NULL, 2, 5, 'Router not working', 'open', NULL, NULL, NULL, '2026-02-17 17:30:39', 'uploads/complaint_20260217_183039_6dc46900.jpg');
 
 -- --------------------------------------------------------
 
@@ -113,7 +116,9 @@ INSERT INTO `customer` (`customer_id`, `email`, `first_name`, `last_name`, `stre
 (2, 'steve.rogers@email.com', 'Steve', 'Rogers', '569 Leaman Place', 'Brooklyn', 'NY', '11201', '555-0102', 'captain1'),
 (3, 'natasha.romanoff@email.com', 'Natasha', 'Romanoff', '15 Spyglass Lane', 'Washington', 'DC', '20001', '555-0103', 'blackwidow1'),
 (4, 'wanda.maximoff@email.com', 'Wanda', 'Maximoff', '77 Westview Rd', 'Westview', 'NJ', '07001', '555-0104', 'scarlet1'),
-(5, 'tchalla@email.com', 'T\'Challa', 'Wakanda', '1 Golden City Way', 'Oakland', 'CA', '94601', '555-0105', 'panther1');
+(5, 'tchalla@email.com', 'T\'Challa', 'Wakanda', '', 'Oakland', 'CA', '', '', 'panther1'),
+(6, 'chase@aol.com', 'john', 'smith', '', '', '', '', '', '1111'),
+(7, 'john@aol.com', 'john', 'doe', '', '', '', '', '', '1111');
 
 -- --------------------------------------------------------
 
@@ -214,7 +219,7 @@ ALTER TABLE `products_services`
 -- AUTO_INCREMENT for table `complaints`
 --
 ALTER TABLE `complaints`
-  MODIFY `complaint_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `complaint_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `complaint_types`
@@ -226,7 +231,7 @@ ALTER TABLE `complaint_types`
 -- AUTO_INCREMENT for table `customer`
 --
 ALTER TABLE `customer`
-  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `employees`

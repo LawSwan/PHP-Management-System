@@ -302,6 +302,78 @@ h1, h2, .heading-serif {
     margin-top: 0.25rem;
 }
 
+/*
+    Legacy form controls
+    Some pages still use plain <input>, <select>, and <textarea> without the .form-input class.
+    These rules keep controls readable on the dark theme across the whole site.
+*/
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]),
+select,
+textarea {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--gray-700);
+    border-radius: var(--radius-md);
+    color: var(--accent-cream);
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"])::placeholder,
+textarea::placeholder {
+    color: var(--gray-500);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--accent-sage);
+    box-shadow: 0 0 0 3px rgba(168, 184, 154, 0.15);
+}
+
+select option {
+    background: var(--bg-secondary);
+    color: var(--accent-cream);
+}
+
+/*
+    Legacy submit buttons
+    A few forms use <input type="submit"> without the .btn classes.
+    This makes them match the rest of the site and adds a hover highlight.
+*/
+input[type="submit"],
+input[type="button"],
+button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    background: var(--accent-sage);
+    color: var(--bg-primary);
+}
+
+input[type="submit"]:hover:not(:disabled),
+input[type="button"]:hover:not(:disabled),
+button:hover:not(:disabled) {
+    background: var(--primary-400);
+}
+
+input[type="submit"]:disabled,
+input[type="button"]:disabled,
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* Table Components styles. */
 .data-table {
     width: 100%;
@@ -956,3 +1028,14 @@ h1, h2, .heading-serif {
 .bg-card { background: var(--bg-card); }
 /* .border-subtle styles. */
 .border-subtle { border-color: var(--gray-700); }
+
+/* Header nav scrolling styles.
+   Keeps long admin link sets from overlapping the centered logo.
+*/
+.header-scroll::-webkit-scrollbar {
+    height: 0;
+}
+
+.header-scroll {
+    scrollbar-width: none;
+}

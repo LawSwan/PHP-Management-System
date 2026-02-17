@@ -26,6 +26,7 @@ class ComplaintDB {
         );
 
         $complaint->setComplaintId((int)$row["complaint_id"]);
+        $complaint->setImagePath($row["complaint_image"] == null ? "" : $row["complaint_image"]);
         $complaint->setTechnicianNotes($row["technician_notes"] == null ? "" : $row["technician_notes"]);
         $complaint->setResolutionDate($row["resolution_date"] == null ? "" : $row["resolution_date"]);
         $complaint->setResolutionNotes($row["resolution_notes"] == null ? "" : $row["resolution_notes"]);
@@ -41,7 +42,7 @@ class ComplaintDB {
     }
 
     //insert a new record
-    public static function insertComplaint($customerIdNumber, $productServiceIdNumber, $complaintTypeIdNumber, $complaintDescriptionText) {
+    public static function insertComplaint($customerIdNumber, $productServiceIdNumber, $complaintTypeIdNumber, $complaintDescriptionText, $imagePathText) {
 
         $db = new Database();
         $conn = $db->getDbConn();
@@ -54,13 +55,13 @@ class ComplaintDB {
             employee_id starts as null until an admin assigns a technician.
         */
         $sql = "insert into complaints
-                (customer_id, product_service_id, complaint_type_id, description, status)
-                values (?, ?, ?, ?, 'open')";
+                (customer_id, product_service_id, complaint_type_id, description, complaint_image, status)
+                values (?, ?, ?, ?, ?, 'open')";
 
         $statement = mysqli_prepare($conn, $sql);
         if ($statement == false) return false;
 
-        mysqli_stmt_bind_param($statement, "iiis", $customerIdNumber, $productServiceIdNumber, $complaintTypeIdNumber, $complaintDescriptionText);
+        mysqli_stmt_bind_param($statement, "iiiss", $customerIdNumber, $productServiceIdNumber, $complaintTypeIdNumber, $complaintDescriptionText, $imagePathText);
         return mysqli_stmt_execute($statement);
     }
 
@@ -83,6 +84,7 @@ class ComplaintDB {
                        c.product_service_id,
                        c.complaint_type_id,
                        c.description,
+                       c.complaint_image,
                        c.status,
                        c.technician_notes,
                        c.resolution_date,
@@ -129,6 +131,7 @@ class ComplaintDB {
                        c.product_service_id,
                        c.complaint_type_id,
                        c.description,
+                       c.complaint_image,
                        c.status,
                        c.technician_notes,
                        c.resolution_date,
@@ -176,6 +179,7 @@ class ComplaintDB {
                        c.product_service_id,
                        c.complaint_type_id,
                        c.description,
+                       c.complaint_image,
                        c.status,
                        c.technician_notes,
                        c.resolution_date,
@@ -244,6 +248,7 @@ class ComplaintDB {
                        c.product_service_id,
                        c.complaint_type_id,
                        c.description,
+                       c.complaint_image,
                        c.status,
                        c.technician_notes,
                        c.resolution_date,
@@ -297,6 +302,7 @@ class ComplaintDB {
                        c.product_service_id,
                        c.complaint_type_id,
                        c.description,
+                       c.complaint_image,
                        c.status,
                        c.technician_notes,
                        c.resolution_date,
@@ -417,6 +423,7 @@ class ComplaintDB {
                        c.product_service_id,
                        c.complaint_type_id,
                        c.description,
+                       c.complaint_image,
                        c.status,
                        c.technician_notes,
                        c.resolution_date,
@@ -455,7 +462,9 @@ class ComplaintDB {
 }
 
 //insert a new record
-function insertComplaint($customerIdNumber, $productServiceIdNumber, $complaintTypeIdNumber, $complaintDescriptionText) { return ComplaintDB::insertComplaint($customerIdNumber, $productServiceIdNumber, $complaintTypeIdNumber, $complaintDescriptionText); }
+function insertComplaint($customerIdNumber, $productServiceIdNumber, $complaintTypeIdNumber, $complaintDescriptionText, $imagePathText) {
+    return ComplaintDB::insertComplaint($customerIdNumber, $productServiceIdNumber, $complaintTypeIdNumber, $complaintDescriptionText, $imagePathText);
+}
 //get all complaints with names
 function getAllComplaintsWithNames() { return ComplaintDB::getAllComplaintsWithNames(); }
 //get open complaints with names

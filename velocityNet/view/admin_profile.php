@@ -7,7 +7,7 @@ require_once(__DIR__ . "/../model/employeesDB.php");
 
 AuthController::startSession();
 
-$employeeIdNumber = isset($_SESSION["user_id"]) ? (int)$_SESSION["user_id"] : 0;
+$employeeIdNumber = isset($_SESSION["employee_id"]) ? (int)$_SESSION["employee_id"] : 0;
 
 $currentPasswordText = "";
 $newPasswordText = "";

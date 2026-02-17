@@ -7,8 +7,9 @@ require_once(__DIR__ . "/../controller/complaint_controller.php");
 
 AuthController::startSession();
 
-$customerIdNumber = 0;
-if (isset($_SESSION["user_id"])) $customerIdNumber = (int)$_SESSION["user_id"];
+// Get the logged in customer id from the session.
+$customerIdNumber = (int)$_SESSION["customer_id"];
+
 
 $ticketList = array();
 if ($customerIdNumber > 0) $ticketList = ComplaintController::getComplaintsByCustomerIdWithNames($customerIdNumber);
@@ -31,12 +32,13 @@ require_once("header.php");
                     <th class="px-6 py-4 text-left text-xs font-medium text-stone-400 uppercase tracking-wider">Product/Service</th>
                     <th class="px-6 py-4 text-left text-xs font-medium text-stone-400 uppercase tracking-wider">Status</th>
                     <th class="px-6 py-4 text-left text-xs font-medium text-stone-400 uppercase tracking-wider">Created</th>
+                    <th class="px-6 py-4 text-left text-xs font-medium text-stone-400 uppercase tracking-wider">Action</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-stone-800">
                 <?php if (count($ticketList) == 0) { ?>
                     <tr>
-                        <td colspan="5" class="px-6 py-6 text-stone-400">
+                        <td colspan="6" class="px-6 py-6 text-stone-400">
                             No tickets found yet.
                         </td>
                     </tr>
@@ -59,6 +61,11 @@ require_once("header.php");
                             </td>
                             <td class="px-6 py-4 text-sm text-stone-400">
                                 <?php echo htmlspecialchars($t->getCreatedAt()); ?>
+                            </td>
+                            <td class="px-6 py-4 text-sm">
+                                <a href="customer_complaint_view.php?complaint_id=<?php echo $t->getComplaintId(); ?>" class="text-[#a8b89a] hover:text-[#f5f3eb] font-medium">
+                                    View
+                                </a>
                             </td>
                         </tr>
                     <?php } ?>

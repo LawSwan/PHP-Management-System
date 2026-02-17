@@ -37,8 +37,8 @@ class ComplaintController {
     }
 
     // Insert a complaint.
-    public static function addComplaint($customerIdNumber, $productServiceIdNumber, $complaintTypeIdNumber, $descriptionText) {
-        return insertComplaint((int)$customerIdNumber, (int)$productServiceIdNumber, (int)$complaintTypeIdNumber, $descriptionText);
+    public static function addComplaint($customerIdNumber, $productServiceIdNumber, $complaintTypeIdNumber, $descriptionText, $imagePathText) {
+        return insertComplaint((int)$customerIdNumber, (int)$productServiceIdNumber, (int)$complaintTypeIdNumber, $descriptionText, $imagePathText);
     }
 
     // Assign technician.
