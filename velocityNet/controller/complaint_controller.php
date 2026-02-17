@@ -11,6 +11,11 @@ class ComplaintController {
         return getAllComplaintsWithNames();
     }
 
+    // Customer list by customer.
+    public static function getComplaintsByCustomerIdWithNames($customerIdNumber) {
+        return getComplaintsByCustomerIdWithNames((int)$customerIdNumber);
+    }
+
     // Tech list by technician.
     public static function getComplaintsByEmployeeIdWithNames($employeeIdNumber) {
         return getComplaintsByEmployeeIdWithNames((int)$employeeIdNumber);

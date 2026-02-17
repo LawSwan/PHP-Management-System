@@ -1,6 +1,6 @@
 <?php
-// Employee Profile page.
-// Lets a technician update their password.
+// Admin Profile page.
+// Lets an admin update their password.
 
 require_once(__DIR__ . "/../controller/auth_controller.php");
 require_once(__DIR__ . "/../model/employeesDB.php");
@@ -87,7 +87,7 @@ require_once("header.php");
             <?php } ?>
         <?php } ?>
 
-        <form method="POST" action="technician_password_change.php" class="space-y-6" novalidate>
+        <form method="POST" action="admin_profile.php" class="space-y-6" novalidate>
 
             <div>
                 <label for="current_password" class="block text-sm font-medium text-stone-300 mb-2">Current password</label>

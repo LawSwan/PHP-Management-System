@@ -398,6 +398,60 @@ class ComplaintDB {
 
         return $list;
     }
+
+    //get complaints by customer id
+    public static function getComplaintsByCustomerIdWithNames($customerIdNumber) {
+
+        $db = new Database();
+        $conn = $db->getDbConn();
+        if ($conn == false) return array();
+
+        /*
+            SQL pulls complaint rows for one customer.
+            Joins other tables so the list can display names.
+            Orders by newest complaint first.
+        */
+        $sql = "select c.complaint_id,
+                       c.customer_id,
+                       c.employee_id,
+                       c.product_service_id,
+                       c.complaint_type_id,
+                       c.description,
+                       c.status,
+                       c.technician_notes,
+                       c.resolution_date,
+                       c.resolution_notes,
+                       c.created_at,
+                       concat(cu.first_name, ' ', cu.last_name) customer_name,
+                       concat(e.first_name, ' ', e.last_name) employee_name,
+                       ps.product_service_name,
+                       ct.complaint_type_name
+                from complaints c
+                join customer cu on c.customer_id = cu.customer_id
+                left join employees e on c.employee_id = e.employee_id
+                join products_services ps on c.product_service_id = ps.product_service_id
+                join complaint_types ct on c.complaint_type_id = ct.complaint_type_id
+                where c.customer_id = ?
+                order by c.complaint_id desc";
+
+        $statement = mysqli_prepare($conn, $sql);
+        if ($statement == false) return array();
+
+        mysqli_stmt_bind_param($statement, "i", $customerIdNumber);
+        if (mysqli_stmt_execute($statement) == false) return array();
+
+        $result = mysqli_stmt_get_result($statement);
+        $list = array();
+
+        if ($result != false) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $list[] = self::rowToComplaintWithNames($row);
+            }
+        }
+
+        return $list;
+    }
+
 }
 
 //insert a new record
@@ -412,6 +466,8 @@ function getUnassignedOpenComplaintsWithNames() { return ComplaintDB::getUnassig
 function assignComplaintToTechnician($complaintIdNumber, $employeeIdNumber) { return ComplaintDB::assignComplaintToTechnician($complaintIdNumber, $employeeIdNumber); }
 //get complaints by employee id with names
 function getComplaintsByEmployeeIdWithNames($employeeIdNumber) { return ComplaintDB::getComplaintsByEmployeeIdWithNames($employeeIdNumber); }
+//get complaints by customer id with names
+function getComplaintsByCustomerIdWithNames($customerIdNumber) { return ComplaintDB::getComplaintsByCustomerIdWithNames($customerIdNumber); }
 //get complaint by id
 function getComplaintById($complaintIdNumber) { return ComplaintDB::getComplaintById($complaintIdNumber); }
 //update an existing record

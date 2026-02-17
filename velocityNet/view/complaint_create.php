@@ -3,8 +3,11 @@
 // Inserts a new complaint (customer side).
 // 
 
+require_once(__DIR__ . "/../controller/auth_controller.php");
 require_once(__DIR__ . "/../controller/lists_controller.php");
 require_once(__DIR__ . "/../controller/complaint_controller.php");
+
+AuthController::startSession();
 
 $errorMessage = "";
 $successMessage = "";
@@ -16,8 +19,12 @@ $complaintTypeList = ListsController::getAllComplaintTypes();
 // insert when user submits the form
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    // customer id is hardcoded until login exists
-    $customerIdNumber = 1;
+    $customerIdNumber = 0;
+    if (isset($_SESSION["user_id"])) $customerIdNumber = (int)$_SESSION["user_id"];
+
+    if ($customerIdNumber <= 0) {
+        $errorMessage = "Login is required to submit a complaint.";
+    }
 
     $productServiceIdNumber = (int)($_POST["product_service_id"] ?? 0);
     $complaintTypeIdNumber = (int)($_POST["complaint_type_id"] ?? 0);

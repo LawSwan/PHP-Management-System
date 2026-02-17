@@ -2,9 +2,13 @@
 // Technician Complaint List page.
 // Shows complaints assigned to a technician.
 
+require_once(__DIR__ . "/../controller/auth_controller.php");
 require_once(__DIR__ . "/../controller/complaint_controller.php");
 
-$employeeIdNumber = 1; // hardcoded until login is wired up
+AuthController::startSession();
+
+$employeeIdNumber = 0;
+if (isset($_SESSION["user_id"])) $employeeIdNumber = (int)$_SESSION["user_id"];
 $complaintList = ComplaintController::getComplaintsByEmployeeIdWithNames($employeeIdNumber);
 
 require_once("header.php");
@@ -18,11 +22,6 @@ require_once("header.php");
     <p>Missing employee id.</p>
 
 <?php } else { ?>
-
-    <?php
-    // get complaints assigned to this technician.
-    $complaintList = getComplaintsByEmployeeIdWithNames($employeeIdNumber);
-    ?>
 
     <p>Viewing complaints assigned to technician id: <?php echo $employeeIdNumber; ?></p>
 

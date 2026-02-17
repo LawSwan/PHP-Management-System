@@ -151,6 +151,59 @@ class CustomerDB {
 
         return mysqli_stmt_execute($statement);
     }
+
+    //update customer password
+    public static function updateCustomerPassword($customerIdNumber, $passwordText) {
+
+        $db = new Database();
+        $conn = $db->getDbConn();
+        if ($conn == false) return false;
+
+        /*
+            SQL updates the password for one customer.
+        */
+        $sql = "update customer
+                set customer_password = ?
+                where customer_id = ?";
+
+        $statement = mysqli_prepare($conn, $sql);
+        if ($statement == false) return false;
+
+        mysqli_stmt_bind_param($statement, "si", $passwordText, $customerIdNumber);
+        return mysqli_stmt_execute($statement);
+    }
+
+    //get customer by email
+    public static function getCustomerByEmail($emailText) {
+
+        $db = new Database();
+        $conn = $db->getDbConn();
+        if ($conn == false) return null;
+
+        /*
+            SQL finds one customer row by email.
+            Used for login checks.
+        */
+        $sql = "select customer_id, email, first_name, last_name, street_address, city, state, zip_code, phone_number, customer_password
+                from customer
+                where email = ?
+                limit 1";
+
+        $statement = mysqli_prepare($conn, $sql);
+        if ($statement == false) return null;
+
+        mysqli_stmt_bind_param($statement, "s", $emailText);
+        if (mysqli_stmt_execute($statement) == false) return null;
+
+        $result = mysqli_stmt_get_result($statement);
+        if ($result == false) return null;
+
+        $row = mysqli_fetch_assoc($result);
+        if ($row == null) return null;
+
+        return self::rowToCustomer($row);
+    }
+
 }
 
 //insert a new record
@@ -171,5 +224,15 @@ function getCustomerById($customerIdNumber) {
 //update an existing record
 function updateCustomer($customerIdNumber, $emailText, $firstNameText, $lastNameText, $streetAddressText, $cityText, $stateText, $zipCodeText, $phoneNumberText) {
     return CustomerDB::updateCustomer($customerIdNumber, $emailText, $firstNameText, $lastNameText, $streetAddressText, $cityText, $stateText, $zipCodeText, $phoneNumberText);
+}
+
+//update customer password
+function updateCustomerPassword($customerIdNumber, $passwordText) {
+    return CustomerDB::updateCustomerPassword($customerIdNumber, $passwordText);
+}
+
+//get customer by email
+function getCustomerByEmail($emailText) {
+    return CustomerDB::getCustomerByEmail($emailText);
 }
 ?>

@@ -143,6 +143,38 @@ class EmployeeDB {
         return mysqli_stmt_execute($statement);
     }
 
+
+    //get employee by email
+    public static function getEmployeeByEmail($emailText) {
+
+        $db = new Database();
+        $conn = $db->getDbConn();
+        if ($conn == false) return null;
+
+        /*
+            SQL finds one employee row by email.
+            Used for login checks.
+        */
+        $sql = "select employee_id, email, first_name, last_name, level, employee_password
+                from employees
+                where email = ?
+                limit 1";
+
+        $statement = mysqli_prepare($conn, $sql);
+        if ($statement == false) return null;
+
+        mysqli_stmt_bind_param($statement, "s", $emailText);
+        if (mysqli_stmt_execute($statement) == false) return null;
+
+        $result = mysqli_stmt_get_result($statement);
+        if ($result == false) return null;
+
+        $row = mysqli_fetch_assoc($result);
+        if ($row == null) return null;
+
+        return self::rowToEmployee($row);
+    }
+
 }
 
 //get all employees
@@ -153,4 +185,10 @@ function getEmployeeById($employeeIdNumber) { return EmployeeDB::getEmployeeById
 function insertEmployee($emailText, $firstNameText, $lastNameText, $roleText, $passwordText) { return EmployeeDB::insertEmployee($emailText, $firstNameText, $lastNameText, $roleText, $passwordText); }
 //update an existing record
 function updateEmployee($employeeIdNumber, $emailText, $firstNameText, $lastNameText, $roleText) { return EmployeeDB::updateEmployee($employeeIdNumber, $emailText, $firstNameText, $lastNameText, $roleText); }
+
+//update password
+function updateEmployeePassword($employeeIdNumber, $passwordText) { return EmployeeDB::updateEmployeePassword($employeeIdNumber, $passwordText); }
+
+//get employee by email
+function getEmployeeByEmail($emailText) { return EmployeeDB::getEmployeeByEmail($emailText); }
 ?>
