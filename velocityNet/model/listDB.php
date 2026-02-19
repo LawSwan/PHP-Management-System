@@ -97,11 +97,4 @@ class ListDB {
         return $list;
     }
 }
-
-//get all products services
-function getAllProductsServices() { return ListDB::getAllProductsServices(); }
-//get all complaint types
-function getAllComplaintTypes() { return ListDB::getAllComplaintTypes(); }
-//get all technicians
-function getAllTechnicians() { return ListDB::getAllTechnicians(); }
 ?>

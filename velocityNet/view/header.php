@@ -3,23 +3,21 @@
 // Displays the top navigation and opens the HTML layout.
 // Also starts the session so login state is available everywhere.
 
-require_once(__DIR__ . "/../controller/auth_controller.php");
+require_once(__DIR__ . "/../util/security.php");
 
 $inViewFolder = (strpos($_SERVER["PHP_SELF"], "/view/") !== false);
 $homeHref = $inViewFolder ? "../index.php" : "index.php";
 $viewPrefix = $inViewFolder ? "" : "view/";
 $assetPrefix = $inViewFolder ? "../" : "";
 
-AuthController::startSession();
+Security::checkHTTPS();
 
 // Enforce role access rules based on the current file name.
 $pageFileName = basename($_SERVER["PHP_SELF"]);
-AuthController::enforcePageAccess($pageFileName, $homeHref, $viewPrefix);
-
 // Current user info for the header.
-$isLoggedIn = AuthController::isLoggedIn();
-$role = AuthController::getRole();
-$displayName = AuthController::getDisplayName();
+$isLoggedIn = ((isset($_SESSION["admin"]) && $_SESSION["admin"]===true) || (isset($_SESSION["tech"]) && $_SESSION["tech"]===true) || (isset($_SESSION["customer"]) && $_SESSION["customer"]===true));
+$role = (isset($_SESSION["role"]) ? (string)$_SESSION["role"] : "");
+$displayName = (isset($_SESSION["display_name"]) ? (string)$_SESSION["display_name"] : "");
 
 // Build nav links based on role.
 $leftLinks = array();

@@ -1,11 +1,16 @@
 <?php
+require_once(__DIR__ . "/../util/security.php");
+require_once(__DIR__ . "/../util/password_validator.php");
+
+Security::checkHTTPS();
+Security::checkAuthority("tech");
+
 // Employee Profile page.
 // Lets a technician update their password.
 
-require_once(__DIR__ . "/../controller/auth_controller.php");
-require_once(__DIR__ . "/../model/employeesDB.php");
+require_once(__DIR__ . "/../controller/employee_controller.php");
 
-AuthController::startSession();
+Security::startSession();
 
 $employeeIdNumber = isset($_SESSION["employee_id"]) ? (int)$_SESSION["employee_id"] : 0;
 
@@ -29,8 +34,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if ($newPasswordText === "") $newPasswordError = "New password is required.";
     if ($confirmPasswordText === "") $confirmPasswordError = "Confirm password is required.";
 
-    if ($newPasswordError === "" && strlen($newPasswordText) < 6) {
-        $newPasswordError = "New password must be at least 6 characters.";
+    if ($newPasswordError === "") {
+        $newPasswordError = PasswordValidator::getFirstMessage($newPasswordText);
     }
 
     if ($newPasswordError === "" && $confirmPasswordError === "" && $newPasswordText !== $confirmPasswordText) {
@@ -39,16 +44,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if ($currentPasswordError === "" && $newPasswordError === "" && $confirmPasswordError === "") {
 
-        $employee = getEmployeeById($employeeIdNumber);
+        $employee = EmployeeController::getEmployeeById($employeeIdNumber);
 
         if ($employee == null) {
             $formMessage = "Employee record not found.";
             $formMessageType = "error";
-        } else if ($employee->getPasswordHash() !== $currentPasswordText) {
+        } else if (!password_verify($currentPasswordText, $employee->getPasswordHash())) {
             $currentPasswordError = "Current password is incorrect.";
         } else {
 
-            $ok = updateEmployeePassword($employeeIdNumber, $newPasswordText);
+            $ok = EmployeeController::updateEmployeePassword($employeeIdNumber, $newPasswordText);
 
             if ($ok) {
                 $formMessage = "Password updated.";

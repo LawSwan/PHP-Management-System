@@ -1,11 +1,15 @@
 <?php
+require_once(__DIR__ . "/../util/security.php");
+
+Security::checkHTTPS();
+Security::checkAuthority("customer");
+
 // Customer ticket list page.
 // Shows tickets for the logged in customer only.
 
-require_once(__DIR__ . "/../controller/auth_controller.php");
 require_once(__DIR__ . "/../controller/complaint_controller.php");
 
-AuthController::startSession();
+Security::startSession();
 
 // Get the logged in customer id from the session.
 $customerIdNumber = (int)$_SESSION["customer_id"];

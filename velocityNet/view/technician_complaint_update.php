@@ -1,11 +1,15 @@
 <?php
+require_once(__DIR__ . "/../util/security.php");
+
+Security::checkHTTPS();
+Security::checkAuthority("tech");
+
 // Technician Complaint Update page.
 // Updates technician notes, status, and resolution fields.
 
-require_once(__DIR__ . "/../controller/auth_controller.php");
 require_once(__DIR__ . "/../controller/complaint_controller.php");
 
-AuthController::startSession();
+Security::startSession();
 
 $errorMessage = "";
 $successMessage = "";
@@ -22,7 +26,7 @@ $complaintRow = null;
 if ($complaintIdNumber > 0) $complaintRow = ComplaintController::getComplaintById($complaintIdNumber);
 
 //techs can only update complaints assigned to them
-if ($complaintRow != null && AuthController::getRole() === "tech") {
+if ($complaintRow != null && (isset($_SESSION["role"]) ? (string)$_SESSION["role"] : "") === "tech") {
     if ((int)$complaintRow->getEmployeeId() !== $employeeIdNumber) {
         $complaintRow = null;
         $errorMessage = "This complaint is not assigned to the current technician.";

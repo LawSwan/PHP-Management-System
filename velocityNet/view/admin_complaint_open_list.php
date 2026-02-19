@@ -1,4 +1,9 @@
 <?php
+require_once(__DIR__ . "/../util/security.php");
+
+Security::checkHTTPS();
+Security::checkAuthority("admin");
+
 // Admin Open Complaints page.
 
 require_once(__DIR__ . "/../controller/complaint_controller.php");
@@ -20,7 +25,7 @@ require_once("header.php");
         <th>Product/Service</th>
         <th>Complaint Type</th>
         <th>Created</th>
-        <th>Assign</th>
+        <th>Actions</th>
     </tr>
 
 <?php //loop through complaintList and build output ?>
@@ -38,9 +43,9 @@ require_once("header.php");
         <td><?php echo $complaintRow->getCreatedAt(); ?></td>
 
         <td>
-            <a href="admin_complaint_assign.php?complaint_id=<?php echo $complaintRow->getComplaintId(); ?>">
-                Assign
-            </a>
+            <a class="action-link" href="admin_complaint_view.php?complaint_id=<?php echo $complaintRow->getComplaintId(); ?>">View</a>
+            |
+            <a class="action-link" href="admin_complaint_assign.php?complaint_id=<?php echo $complaintRow->getComplaintId(); ?>">Assign</a>
         </td>
     </tr>
 <?php } ?>

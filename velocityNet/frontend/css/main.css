@@ -1039,3 +1039,18 @@ button:disabled {
 .header-scroll {
     scrollbar-width: none;
 }
+
+/* Action links used in list pages (Edit, View, Assign). */
+.action-link {
+    color: var(--accent-sage);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 3px 6px;
+    border-radius: 4px;
+}
+
+/* Hover highlight for action links to match button hover behavior. */
+.action-link:hover {
+    color: var(--bg-primary);
+    background: var(--accent-sage);
+}

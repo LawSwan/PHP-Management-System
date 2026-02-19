@@ -1,11 +1,15 @@
 <?php
+require_once(__DIR__ . "/../util/security.php");
+
+Security::checkHTTPS();
+Security::checkAuthority("tech");
+
 // Technician Complaint List page.
 // Shows complaints assigned to a technician.
 
-require_once(__DIR__ . "/../controller/auth_controller.php");
 require_once(__DIR__ . "/../controller/complaint_controller.php");
 
-AuthController::startSession();
+Security::startSession();
 
 $employeeIdNumber = 0;
 if (isset($_SESSION["employee_id"])) $employeeIdNumber = (int)$_SESSION["employee_id"];

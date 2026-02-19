@@ -1,22 +1,24 @@
 <?php
+require_once(__DIR__ . "/../util/security.php");
+
 // Login page.
 // Allows customers, technicians, and admins to sign in.
 // Stores role info in session so headers and access checks work.
 
-require_once(__DIR__ . "/../controller/auth_controller.php");
 require_once(__DIR__ . "/../model/customerDB.php");
 require_once(__DIR__ . "/../model/employeesDB.php");
 
-AuthController::startSession();
+Security::checkHTTPS();
+
+Security::startSession();
 
 // If already logged in, send them to a page that matches their role.
-if (AuthController::isLoggedIn()) {
-    $role = AuthController::getRole();
-    if ($role === "admin") {
+if ((isset($_SESSION["admin"]) && $_SESSION["admin"] === true) || (isset($_SESSION["tech"]) && $_SESSION["tech"] === true) || (isset($_SESSION["customer"]) && $_SESSION["customer"] === true)) {
+    if (isset($_SESSION["admin"]) && $_SESSION["admin"] === true) {
         header("Location: admin_complaint_unassigned_list.php");
         exit;
     }
-    if ($role === "tech") {
+    if (isset($_SESSION["tech"]) && $_SESSION["tech"] === true) {
         header("Location: technician_complaint_list.php");
         exit;
     }
@@ -42,9 +44,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if ($emailError === "" && $passwordError === "") {
 
         // Try employees first (admin / tech).
-        $employee = getEmployeeByEmail($emailText);
+        $employee = EmployeeDB::getEmployeeByEmail($emailText);
 
-        if ($employee != null && $employee->getPasswordHash() === $passwordText) {
+        // Passwords are stored hashed in the database.
+        // Use password_verify to compare the entered password to the stored hash.
+        if ($employee != null && password_verify($passwordText, $employee->getPasswordHash())) {
 
             $level = strtolower(trim($employee->getRole()));
 
@@ -58,6 +62,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $_SESSION["employee_id"] = (int)$employee->getEmployeeId();
             unset($_SESSION["customer_id"]);
             $_SESSION["role"] = $role;
+
+            $_SESSION["admin"] = ($role === "admin");
+            $_SESSION["tech"] = ($role === "tech");
+            $_SESSION["customer"] = false;
             $_SESSION["display_name"] = $employee->getFirstName() . " " . $employee->getLastName();
 
             if ($role === "admin") {
@@ -71,15 +79,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         } else {
 
             // Try customer login.
-            $customer = getCustomerByEmail($emailText);
+            $customer = CustomerDB::getCustomerByEmail($emailText);
 
-            if ($customer != null && $customer->getPasswordHash() === $passwordText) {
+            // Passwords are stored hashed in the database.
+            if ($customer != null && password_verify($passwordText, $customer->getPasswordHash())) {
 
                 $_SESSION["user_type"] = "customer";
                 // Store the customer id in session.
                 $_SESSION["customer_id"] = (int)$customer->getCustomerId();
                 unset($_SESSION["employee_id"]);
                 $_SESSION["role"] = "customer";
+
+                $_SESSION["admin"] = false;
+                $_SESSION["tech"] = false;
+                $_SESSION["customer"] = true;
                 $_SESSION["display_name"] = $customer->getFirstName() . " " . $customer->getLastName();
 
                 header("Location: customer_my_tickets.php");

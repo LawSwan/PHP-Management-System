@@ -1,4 +1,9 @@
 <?php
+require_once(__DIR__ . "/../util/security.php");
+
+Security::checkHTTPS();
+Security::checkAuthority("admin");
+
 // Admin Complaint Assign page.
 // Lets admin assign a technician to a complaint.
 

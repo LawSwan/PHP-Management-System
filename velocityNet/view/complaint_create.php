@@ -1,13 +1,17 @@
 <?php
+require_once(__DIR__ . "/../util/security.php");
+
+Security::checkHTTPS();
+Security::checkAuthority("customer");
+
 // Complaint Create page.
 // Inserts a new complaint (customer side).
 // 
 
-require_once(__DIR__ . "/../controller/auth_controller.php");
 require_once(__DIR__ . "/../controller/lists_controller.php");
 require_once(__DIR__ . "/../controller/complaint_controller.php");
 
-AuthController::startSession();
+Security::startSession();
 
 $errorMessage = "";
 $successMessage = "";

@@ -204,35 +204,24 @@ class CustomerDB {
         return self::rowToCustomer($row);
     }
 
-}
 
-//insert a new record
-function insertCustomer($emailText, $firstNameText, $lastNameText, $streetAddressText, $cityText, $stateText, $zipCodeText, $phoneNumberText, $passwordText) {
-    return CustomerDB::insertCustomer($emailText, $firstNameText, $lastNameText, $streetAddressText, $cityText, $stateText, $zipCodeText, $phoneNumberText, $passwordText);
-}
+    // Delete one customer by id.
+    public static function deleteCustomer($customerIdNumber) {
 
-//get all customers
-function getAllCustomers() {
-    return CustomerDB::getAllCustomers();
-}
+        $db = new Database();
+        $conn = $db->getDbConn();
+        if ($conn == false) return false;
 
-//get customer by id
-function getCustomerById($customerIdNumber) {
-    return CustomerDB::getCustomerById($customerIdNumber);
-}
+        $sql = "delete from customer where customer_id = ?";
 
-//update an existing record
-function updateCustomer($customerIdNumber, $emailText, $firstNameText, $lastNameText, $streetAddressText, $cityText, $stateText, $zipCodeText, $phoneNumberText) {
-    return CustomerDB::updateCustomer($customerIdNumber, $emailText, $firstNameText, $lastNameText, $streetAddressText, $cityText, $stateText, $zipCodeText, $phoneNumberText);
-}
+        $statement = mysqli_prepare($conn, $sql);
+        if ($statement == false) return false;
 
-//update customer password
-function updateCustomerPassword($customerIdNumber, $passwordText) {
-    return CustomerDB::updateCustomerPassword($customerIdNumber, $passwordText);
-}
+        mysqli_stmt_bind_param($statement, "i", $customerIdNumber);
+        mysqli_stmt_execute($statement);
 
-//get customer by email
-function getCustomerByEmail($emailText) {
-    return CustomerDB::getCustomerByEmail($emailText);
+        return (mysqli_stmt_affected_rows($statement) > 0);
+    }
+
 }
 ?>

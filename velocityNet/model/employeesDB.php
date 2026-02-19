@@ -185,20 +185,24 @@ class EmployeeDB {
         return self::rowToEmployee($row);
     }
 
+
+    // Delete one employee by id.
+    public static function deleteEmployee($employeeIdNumber) {
+
+        $db = new Database();
+        $conn = $db->getDbConn();
+        if ($conn == false) return false;
+
+        $sql = "delete from employees where employee_id = ?";
+
+        $statement = mysqli_prepare($conn, $sql);
+        if ($statement == false) return false;
+
+        mysqli_stmt_bind_param($statement, "i", $employeeIdNumber);
+        mysqli_stmt_execute($statement);
+
+        return (mysqli_stmt_affected_rows($statement) > 0);
+    }
+
 }
-
-//get all employees
-function getAllEmployees() { return EmployeeDB::getAllEmployees(); }
-//get employee by id
-function getEmployeeById($employeeIdNumber) { return EmployeeDB::getEmployeeById($employeeIdNumber); }
-//insert a new record
-function insertEmployee($emailText, $firstNameText, $lastNameText, $roleText, $passwordText) { return EmployeeDB::insertEmployee($emailText, $firstNameText, $lastNameText, $roleText, $passwordText); }
-//update an existing record
-function updateEmployee($employeeIdNumber, $emailText, $firstNameText, $lastNameText, $roleText) { return EmployeeDB::updateEmployee($employeeIdNumber, $emailText, $firstNameText, $lastNameText, $roleText); }
-
-//update password
-function updateEmployeePassword($employeeIdNumber, $passwordText) { return EmployeeDB::updateEmployeePassword($employeeIdNumber, $passwordText); }
-
-//get employee by email
-function getEmployeeByEmail($emailText) { return EmployeeDB::getEmployeeByEmail($emailText); }
 ?>

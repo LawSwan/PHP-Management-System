@@ -1,4 +1,9 @@
 <?php
+require_once(__DIR__ . "/../util/security.php");
+
+Security::checkHTTPS();
+Security::checkAuthority("admin");
+
 // Admin Unassigned Complaints page.
 
 require_once(__DIR__ . "/../controller/complaint_controller.php");

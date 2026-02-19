@@ -1,8 +1,11 @@
 <?php
+require_once(__DIR__ . "/../util/security.php");
+
+Security::checkHTTPS();
+Security::startSession();
+
 // Access denied page.
 // Shows a simple message when a user tries to open a page they do not have access to.
-
-require_once(__DIR__ . "/../controller/auth_controller.php");
 
 require_once("header.php");
 ?>

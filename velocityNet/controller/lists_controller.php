@@ -7,14 +7,14 @@ require_once(__DIR__ . "/../model/listDB.php");
 class ListsController {
 
     public static function getAllProductsServices() {
-        return getAllProductsServices();
+        return ListDB::getAllProductsServices();
     }
 
     public static function getAllComplaintTypes() {
-        return getAllComplaintTypes();
+        return ListDB::getAllComplaintTypes();
     }
 
     public static function getAllTechnicians() {
-        return getAllTechnicians();
+        return ListDB::getAllTechnicians();
     }
 }

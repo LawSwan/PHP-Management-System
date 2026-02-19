@@ -1,13 +1,17 @@
 <?php
+require_once(__DIR__ . "/../util/security.php");
+
+Security::checkHTTPS();
+Security::checkAuthority("customer");
+
 // Customer Complaint View page.
 // Shows one complaint and the current status/notes.
 
-require_once(__DIR__ . "/../controller/auth_controller.php");
 require_once(__DIR__ . "/../controller/complaint_controller.php");
 
-AuthController::startSession();
+Security::startSession();
 
-$role = AuthController::getRole();
+$role = (isset($_SESSION["role"]) ? (string)$_SESSION["role"] : "");
 $sessionUserIdNumber = isset($_SESSION["customer_id"]) ? (int)$_SESSION["customer_id"] : 0;
 
 $complaintIdNumber = 0;

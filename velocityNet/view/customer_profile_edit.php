@@ -1,17 +1,22 @@
 <?php
+require_once(__DIR__ . "/../util/security.php");
+require_once(__DIR__ . "/../util/password_validator.php");
+
+Security::checkHTTPS();
+Security::checkAuthority("customer");
+
 // Customer Profile page.
 // Lets the logged-in customer update account info and password.
 
-require_once(__DIR__ . "/../controller/auth_controller.php");
-require_once(__DIR__ . "/../model/customerDB.php");
+require_once(__DIR__ . "/../controller/customer_controller.php");
 
-AuthController::startSession();
+Security::startSession();
 
 $customerIdNumber = isset($_SESSION["customer_id"]) ? (int)$_SESSION["customer_id"] : 0;
 
 //load current customer info so the form can be pre-filled
 $customer = null;
-if ($customerIdNumber > 0) $customer = getCustomerById($customerIdNumber);
+if ($customerIdNumber > 0) $customer = CustomerController::getCustomerById($customerIdNumber);
 
 //fields for account info
 $emailText = $customer ? $customer->getEmail() : "";
@@ -73,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $formMessageType = "error";
         } else if (count($infoErrors) === 0) {
 
-            $ok = updateCustomer($customerIdNumber, $emailText, $firstNameText, $lastNameText, $streetAddressText, $cityText, $stateText, $zipCodeText, $phoneNumberText);
+            $ok = CustomerController::updateCustomer($customerIdNumber, $emailText, $firstNameText, $lastNameText, $streetAddressText, $cityText, $stateText, $zipCodeText, $phoneNumberText);
 
             if ($ok) {
                 $formMessage = "Profile updated.";
@@ -99,9 +104,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if ($newPasswordText === "") $passwordErrors["new_password"] = "New password is required.";
         if ($confirmPasswordText === "") $passwordErrors["confirm_password"] = "Confirm password is required.";
 
-        //basic length rule
-        if (!isset($passwordErrors["new_password"]) && strlen($newPasswordText) < 6) {
-            $passwordErrors["new_password"] = "New password must be at least 6 characters.";
+        if (!isset($passwordErrors["new_password"])) {
+            $passwordRuleMessage = PasswordValidator::getFirstMessage($newPasswordText);
+            if ($passwordRuleMessage !== "") {
+                $passwordErrors["new_password"] = $passwordRuleMessage;
+            }
         }
 
         if (!isset($passwordErrors["confirm_password"]) && $newPasswordText !== $confirmPasswordText) {
@@ -113,16 +120,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $formMessageType = "error";
         } else if (count($passwordErrors) === 0) {
 
-            $customerCheck = getCustomerById($customerIdNumber);
+            $customerCheck = CustomerController::getCustomerById($customerIdNumber);
 
             if ($customerCheck == null) {
                 $formMessage = "Customer record not found.";
                 $formMessageType = "error";
-            } else if ($customerCheck->getPasswordHash() !== $currentPasswordText) {
+            } else if (!password_verify($currentPasswordText, $customerCheck->getPasswordHash())) {
                 $passwordErrors["current_password"] = "Current password is incorrect.";
             } else {
 
-                $ok = updateCustomerPassword($customerIdNumber, $newPasswordText);
+                $ok = CustomerController::updateCustomerPassword($customerIdNumber, $newPasswordText);
 
                 if ($ok) {
                     $formMessage = "Password updated.";
