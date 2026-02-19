@@ -47,6 +47,7 @@ require_once("header.php");
             </tr>
 
 <?php //loop through complaintList and build output ?>
+<!-- Loop through complaints returned from controller -->
             <?php foreach ($complaintList as $complaintRow) { ?>
                 <tr>
                     <td><?php echo $complaintRow->getComplaintId(); ?></td>

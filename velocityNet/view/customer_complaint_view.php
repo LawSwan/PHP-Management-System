@@ -106,6 +106,7 @@ require_once("header.php");
                     <div class="text-stone-200 whitespace-pre-wrap"><?php echo htmlspecialchars($complaintRow->getDescription()); ?></div>
                 </div>
 
+<!-- Only show attachment section if an image exists -->
                 <?php if ($complaintRow->getImagePath() !== "") { ?>
                     <div class="md:col-span-2">
                         <div class="text-stone-400 text-sm mb-2">Uploaded Image</div>

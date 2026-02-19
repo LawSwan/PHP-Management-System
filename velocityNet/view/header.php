@@ -5,8 +5,14 @@
 
 require_once(__DIR__ . "/../util/security.php");
 
+//check if current file is inside view folder
+//adjusts relative paths so links dont break
+
+//true if current page path contains /view/
 $inViewFolder = (strpos($_SERVER["PHP_SELF"], "/view/") !== false);
+//set corrrect link to home depending on folder location
 $homeHref = $inViewFolder ? "../index.php" : "index.php";
+//prefix used when linking to view folder
 $viewPrefix = $inViewFolder ? "" : "view/";
 $assetPrefix = $inViewFolder ? "../" : "";
 
@@ -151,6 +157,7 @@ if (!$isLoggedIn) {
 
                 <!-- Left Navigation Links -->
                 <div class="hidden md:flex items-center space-x-4 overflow-x-auto whitespace-nowrap pr-4 flex-1 header-scroll">
+<!-- Loop through list returned from controller -->
                     <?php foreach ($leftLinks as $l) { ?>
                         <a href="<?php echo $l["href"]; ?>" class="text-stone-400 hover:text-stone-200 text-sm font-medium transition-colors duration-200">
                             <?php echo $l["label"]; ?>
@@ -167,6 +174,7 @@ if (!$isLoggedIn) {
 
                 <!-- Right Links -->
                 <div class="hidden md:flex items-center space-x-4 pl-4 flex-1 justify-end header-scroll overflow-x-auto whitespace-nowrap">
+<!-- Loop through list returned from controller -->
                     <?php foreach ($rightLinks as $r) { ?>
                         <?php if ($r["type"] === "button") { ?>
                             <a href="<?php echo $r["href"]; ?>" class="bg-[#1d211a] hover:bg-[#252a21] text-[#f5f3eb] px-4 py-2 rounded-full text-sm font-medium border border-stone-700 hover:border-stone-600 transition-all duration-200">
@@ -198,6 +206,7 @@ if (!$isLoggedIn) {
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden border-t border-stone-800/50 bg-[#0d0f0a]">
             <div class="px-4 py-4 space-y-3">
+<!-- Loop through list returned from controller -->
                 <?php foreach ($leftLinks as $l) { ?>
                     <a href="<?php echo $l["href"]; ?>" class="block text-stone-400 hover:text-stone-200 text-sm font-medium py-2 transition-colors">
                         <?php echo $l["label"]; ?>
@@ -206,6 +215,7 @@ if (!$isLoggedIn) {
 
                 <?php if (count($rightLinks) > 0) { ?>
                     <div class="pt-3 border-t border-stone-800/50 space-y-3">
+<!-- Loop through list returned from controller -->
                         <?php foreach ($rightLinks as $r) { ?>
                             <?php if ($r["type"] === "label") { ?>
                                 <div class="text-stone-400 text-sm font-medium py-2">

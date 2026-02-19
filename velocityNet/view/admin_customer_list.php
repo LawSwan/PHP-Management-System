@@ -48,6 +48,7 @@ require_once("header.php");
     </tr>
 
 <?php //loop through customerList and build output ?>
+<!-- Loop through customers returned from controller -->
     <?php foreach ($customerList as $customerRow) { ?>
         <tr>
             <td><?php echo $customerRow->getCustomerId(); ?></td>
@@ -59,6 +60,7 @@ require_once("header.php");
             <td>
                 <a class="action-link" href="admin_customer_edit.php?customer_id=<?php echo $customerRow->getCustomerId(); ?>">Edit</a>
 
+<!-- Confirm before running delete action -->
                 <form method="post" action="" style="display:inline;" onsubmit="return confirm('Delete this customer?');">
                     <input type="hidden" name="delete_customer_id" value="<?php echo (int)$customerRow->getCustomerId(); ?>">
                     <button type="submit">Delete</button>

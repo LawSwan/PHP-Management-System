@@ -10,6 +10,7 @@ Security::startSession();
 require_once("header.php");
 ?>
 
+<!-- Message shown when a user does not have permission for a page -->
 <div class="max-w-2xl mx-auto">
     <div class="bg-[#1d211a]/60 border border-stone-700/50 rounded-xl p-8">
         <h1 class="font-serif text-3xl font-medium text-[#f5f3eb] mb-3">Access denied</h1>

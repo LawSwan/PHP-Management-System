@@ -89,6 +89,7 @@ require_once("header.php");
                 </thead>
                 <tbody class="divide-y divide-stone-700/50">
 <?php //loop through complaintList and build output ?>
+<!-- Loop through complaints returned from controller -->
                     <?php foreach ($complaintList as $complaintRow) { ?>
                         <tr class="hover:bg-[#252a21]/50 transition-colors">
                             <!-- Complaint ID -->
@@ -148,6 +149,7 @@ require_once("header.php");
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <a href="admin_complaint_view.php?complaint_id=<?php echo (int)$complaintRow->getComplaintId(); ?>" class="text-sm underline">View</a>
 
+<!-- Confirm before running delete action -->
                                 <form method="post" action="" style="display:inline;" onsubmit="return confirm('Delete this complaint?');">
                                     <input type="hidden" name="delete_complaint_id" value="<?php echo (int)$complaintRow->getComplaintId(); ?>">
                                     <button type="submit" class="text-sm underline">Delete</button>

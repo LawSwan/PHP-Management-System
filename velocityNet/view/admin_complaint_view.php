@@ -87,7 +87,8 @@ require_once("header.php");
                     </p>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <!-- Complaint details -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
                         <p class="text-sm text-stone-500 mb-1">Product / Service</p>
                         <p class="text-[#f5f3eb]"><?php echo htmlspecialchars($complaintRow->getProductServiceName()); ?></p>
@@ -104,10 +105,11 @@ require_once("header.php");
                     <p class="text-[#f5f3eb] whitespace-pre-line"><?php echo htmlspecialchars($complaintRow->getDescription()); ?></p>
                 </div>
 
+<!-- Only show attachment section if an image exists -->
                 <?php if ($complaintRow->getImagePath() != null && $complaintRow->getImagePath() !== "") { ?>
                     <div>
                         <p class="text-sm text-stone-500 mb-2">Attachment</p>
-                        <img src="../<?php echo htmlspecialchars($complaintRow->getImagePath()); ?>" alt="Complaint attachment" class="max-w-full rounded-lg border border-stone-700/50">
+                        <img src="../<?php echo htmlspecialchars($complaintRow->getImagePath()); ?>" alt="Complaint attachment" <!-- Attachment preview --> class="max-w-full rounded-lg border border-stone-700/50">
                     </div>
                 <?php } ?>
 
@@ -137,7 +139,8 @@ require_once("header.php");
                     <div class="flex items-center gap-3">
                         <a class="underline" href="complaint_list.php">Back</a>
 
-                        <form method="post" action="" onsubmit="return confirm('Delete this complaint?');">
+<!-- Confirm before running delete action -->
+                        <form method="post" action="" onsubmit="return confirm('Delete this complaint?');" <!-- Confirm before deleting complaint -->>
                             <input type="hidden" name="delete_complaint_id" value="<?php echo (int)$complaintRow->getComplaintId(); ?>">
                             <button type="submit" class="underline">Delete</button>
                         </form>

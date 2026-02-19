@@ -124,6 +124,7 @@ require_once("header.php");
         <option value="0">Select</option>
 
 <?php //loop through productServiceList and build output ?>
+<!-- Loop through list returned from controller -->
         <?php foreach ($productServiceList as $productServiceRow) { ?>
             <option value="<?php echo $productServiceRow->getProductServiceId(); ?>" <?php if ($productServiceIdNumber == $productServiceRow->getProductServiceId()) echo "selected"; ?>>
                 <?php echo $productServiceRow->getProductServiceName(); ?>
@@ -140,6 +141,7 @@ require_once("header.php");
         <option value="0">Select</option>
 
 <?php //loop through complaintTypeList and build output ?>
+<!-- Loop through complaints returned from controller -->
         <?php foreach ($complaintTypeList as $complaintTypeRow) { ?>
             <option value="<?php echo $complaintTypeRow->getComplaintTypeId(); ?>" <?php if ($complaintTypeIdNumber == $complaintTypeRow->getComplaintTypeId()) echo "selected"; ?>>
                 <?php echo $complaintTypeRow->getComplaintTypeName(); ?>

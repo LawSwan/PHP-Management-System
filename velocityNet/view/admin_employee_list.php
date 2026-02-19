@@ -54,6 +54,7 @@ require_once("header.php");
     </tr>
 
 <?php //loop through employeeList and build output ?>
+<!-- Loop through employees returned from controller -->
     <?php foreach ($employeeList as $employeeRow) { ?>
         <tr>
             <td><?php echo $employeeRow->getEmployeeId(); ?></td>
@@ -64,6 +65,7 @@ require_once("header.php");
                 <a class="action-link" href="admin_employee_edit.php?employee_id=<?php echo $employeeRow->getEmployeeId(); ?>">Edit</a>
 
                 <?php if ((int)$employeeRow->getEmployeeId() !== $currentEmployeeId) { ?>
+<!-- Confirm before running delete action -->
                     <form method="post" action="" style="display:inline;" onsubmit="return confirm('Delete this employee?');">
                         <input type="hidden" name="delete_employee_id" value="<?php echo (int)$employeeRow->getEmployeeId(); ?>">
                         <button type="submit">Delete</button>

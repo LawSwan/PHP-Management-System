@@ -6,7 +6,8 @@ Security::checkHTTPS();
 Security::checkAuthority("admin");
 
 // Admin Profile page.
-// Lets an admin update their password.
+// Allows an admin to change their password.
+// Validates the new password using the same rules as registration.
 
 require_once(__DIR__ . "/../controller/employee_controller.php");
 
@@ -24,6 +25,8 @@ $confirmPasswordError = "";
 $formMessage = "";
 $formMessageType = ""; // success | error
 
+// Handle form submit.
+// Reads inputs, validates, then updates the password if everything checks out.
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if (isset($_POST["current_password"])) $currentPasswordText = (string)$_POST["current_password"];
@@ -50,6 +53,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $formMessage = "Employee record not found.";
             $formMessageType = "error";
         } else if (!password_verify($currentPasswordText, $employee->getPasswordHash())) {
+            // Confirm the current password matches the stored hash.
+
+            // Current password is verified against the stored hash.
+
             $currentPasswordError = "Current password is incorrect.";
         } else {
 
@@ -73,6 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 require_once("header.php");
 ?>
 
+<!-- Page heading and password change form -->
 <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
     <h2 class="font-serif text-3xl text-[#f5f3eb] mb-2">Profile</h2>

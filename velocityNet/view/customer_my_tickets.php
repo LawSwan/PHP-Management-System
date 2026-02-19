@@ -28,7 +28,8 @@ require_once("header.php");
 
 <div class="bg-[#1d211a]/60 border border-stone-700/50 rounded-xl overflow-hidden">
     <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-stone-800">
+        <!-- Tickets table -->
+<table class="min-w-full divide-y divide-stone-800">
             <thead class="bg-[#151912]">
                 <tr>
                     <th class="px-6 py-4 text-left text-xs font-medium text-stone-400 uppercase tracking-wider">Ticket</th>
@@ -47,6 +48,7 @@ require_once("header.php");
                         </td>
                     </tr>
                 <?php } else { ?>
+<!-- Loop through list returned from controller -->
                     <?php foreach ($ticketList as $t) { ?>
                         <tr class="hover:bg-[#252a21]/30 transition-colors">
                             <td class="px-6 py-4 text-sm text-[#f5f3eb]">#<?php echo $t->getComplaintId(); ?></td>
@@ -67,7 +69,8 @@ require_once("header.php");
                                 <?php echo htmlspecialchars($t->getCreatedAt()); ?>
                             </td>
                             <td class="px-6 py-4 text-sm">
-                                <a href="customer_complaint_view.php?complaint_id=<?php echo $t->getComplaintId(); ?>" class="text-[#a8b89a] hover:text-[#f5f3eb] font-medium">
+                                <a <!-- Link to ticket details -->
+                <a class="action-link" href="customer_complaint_view.php?complaint_id=<?php echo $t->getComplaintId(); ?>" class="text-[#a8b89a] hover:text-[#f5f3eb] font-medium">
                                     View
                                 </a>
                             </td>
