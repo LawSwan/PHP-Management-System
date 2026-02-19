@@ -1,0 +1,196 @@
+<?php
+require_once __DIR__ . '/Database.php';
+
+/**
+ * Employee Class - Represents ONE row from the 'employees' table
+ *
+ * Employees can be either "technician" or "administrator" (stored in level)
+ */
+
+class Employee {
+    // Properties matching database columns
+    public ?int $employeeId = null;
+    public string $userId = "";           // Login username
+    public string $password = "";         // Only for creating new employees
+    public string $firstName = "";
+    public string $lastName = "";
+    public string $email = "";
+    public string $phoneExtension = "";
+    public string $level = "";            // "technician" or "administrator"
+
+    private static ?Database $db = null;
+
+    private static function getDb(): mysqli {
+        if (self::$db === null) {
+            self::$db = new Database();
+        }
+        return self::$db->getConnection();
+    }
+
+    // ==================== CRUD OPERATIONS ====================
+
+    /**
+     * CREATE - Save a new employee
+     */
+    public function save(): bool {
+        $conn = self::getDb();
+
+        $sql = "INSERT INTO employees
+                (user_id, employee_password, first_name, last_name, email, phone_extension, level)
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        $statement = mysqli_prepare($conn, $sql);
+
+        mysqli_stmt_bind_param(
+            $statement,
+            "sssssss",
+            $this->userId,
+            $this->password,
+            $this->firstName,
+            $this->lastName,
+            $this->email,
+            $this->phoneExtension,
+            $this->level
+        );
+
+        $result = mysqli_stmt_execute($statement);
+
+        if ($result) {
+            $this->employeeId = mysqli_insert_id($conn);
+        }
+
+        return $result;
+    }
+
+    /**
+     * READ (one) - Find employee by ID
+     */
+    public static function findById(int $id): ?Employee {
+        $conn = self::getDb();
+
+        $sql = "SELECT employee_id, user_id, first_name, last_name, email, phone_extension, level
+                FROM employees
+                WHERE employee_id = ?";
+
+        $statement = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($statement, "i", $id);
+        mysqli_stmt_execute($statement);
+
+        $result = mysqli_stmt_get_result($statement);
+        $row = mysqli_fetch_assoc($result);
+
+        if ($row === null) {
+            return null;
+        }
+
+        return self::fromArray($row);
+    }
+
+    /**
+     * READ (all) - Get all employees
+     */
+    public static function findAll(): array {
+        $conn = self::getDb();
+
+        $sql = "SELECT employee_id, user_id, first_name, last_name, email, phone_extension, level
+                FROM employees
+                ORDER BY last_name, first_name";
+
+        $result = mysqli_query($conn, $sql);
+
+        $employees = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $employees[] = self::fromArray($row);
+        }
+
+        return $employees;
+    }
+
+    /**
+     * Find all technicians only
+     */
+    public static function findAllTechnicians(): array {
+        $conn = self::getDb();
+
+        $sql = "SELECT employee_id, user_id, first_name, last_name, email, phone_extension, level
+                FROM employees
+                WHERE level = 'technician'
+                ORDER BY last_name, first_name";
+
+        $result = mysqli_query($conn, $sql);
+
+        $technicians = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $technicians[] = self::fromArray($row);
+        }
+
+        return $technicians;
+    }
+
+    /**
+     * UPDATE - Save changes to existing employee
+     */
+    public function update(): bool {
+        $conn = self::getDb();
+
+        $sql = "UPDATE employees
+                SET first_name = ?, last_name = ?, email = ?,
+                    phone_extension = ?, level = ?
+                WHERE employee_id = ?";
+
+        $statement = mysqli_prepare($conn, $sql);
+
+        mysqli_stmt_bind_param(
+            $statement,
+            "sssssi",
+            $this->firstName,
+            $this->lastName,
+            $this->email,
+            $this->phoneExtension,
+            $this->level,
+            $this->employeeId
+        );
+
+        return mysqli_stmt_execute($statement);
+    }
+
+    /**
+     * DELETE - Remove employee
+     */
+    public function delete(): bool {
+        $conn = self::getDb();
+
+        $sql = "DELETE FROM employees WHERE employee_id = ?";
+
+        $statement = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($statement, "i", $this->employeeId);
+
+        return mysqli_stmt_execute($statement);
+    }
+
+    // ==================== HELPER METHODS ====================
+
+    public function getFullName(): string {
+        return $this->firstName . " " . $this->lastName;
+    }
+
+    public function isTechnician(): bool {
+        return $this->level === "technician";
+    }
+
+    public function isAdministrator(): bool {
+        return $this->level === "administrator";
+    }
+
+    private static function fromArray(array $row): Employee {
+        $employee = new Employee();
+        $employee->employeeId = (int) $row["employee_id"];
+        $employee->userId = $row["user_id"];
+        $employee->firstName = $row["first_name"];
+        $employee->lastName = $row["last_name"];
+        $employee->email = $row["email"];
+        $employee->phoneExtension = $row["phone_extension"];
+        $employee->level = $row["level"];
+        return $employee;
+    }
+}

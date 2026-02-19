@@ -1,0 +1,298 @@
+<?php
+require_once __DIR__ . '/Database.php';
+
+/**
+ * Customer Class - Represents ONE row from the 'customer' table
+ *
+ * WHY A CLASS INSTEAD OF AN ARRAY?
+ *
+ * BEFORE (Array):
+ *   $customer = ["customer_id" => 1, "first_name" => "John", ...];
+ *   echo $customer["first_name"];      // Works
+ *   echo $customer["frist_name"];      // TYPO - no error, just empty!
+ *   $customer["random_thing"] = 123;   // Can add anything - chaos!
+ *
+ * AFTER (Class):
+ *   $customer = new Customer();
+ *   echo $customer->firstName;         // Works
+ *   echo $customer->fristName;         // ERROR! Property doesn't exist - PHP catches the typo!
+ *   $customer->random_thing = 123;     // ERROR! Can't add undefined properties
+ *
+ * BENEFITS:
+ * 1. Type safety - PHP catches typos and wrong data types
+ * 2. IDE autocomplete - your editor shows you what properties exist
+ * 3. All CRUD operations live WITH the data (not in separate functions)
+ * 4. Easy to add methods like $customer->getFullName()
+ */
+
+class Customer {
+    // These properties match the database columns
+    // They're PUBLIC so we can read/write them, but TYPED so PHP validates them
+    public ?int $customerId = null;      // null until saved to database
+    public string $email = "";
+    public string $firstName = "";
+    public string $lastName = "";
+    public string $streetAddress = "";
+    public string $city = "";
+    public string $state = "";
+    public string $zipCode = "";
+    public string $phoneNumber = "";
+    public string $password = "";        // Only used when creating, not when reading
+
+    // Database connection - shared by all Customer objects
+    private static ?Database $db = null;
+
+    /**
+     * Get a database connection (creates one if needed)
+     */
+    private static function getDb(): mysqli {
+        if (self::$db === null) {
+            self::$db = new Database();
+        }
+        return self::$db->getConnection();
+    }
+
+    // ==================== CRUD OPERATIONS ====================
+    // C = Create, R = Read, U = Update, D = Delete
+    // All in ONE class, all working with THIS customer object
+
+    /**
+     * CREATE - Save a new customer to the database
+     *
+     * BEFORE (procedural):
+     *   insertCustomer($email, $firstName, $lastName, ...);  // 9 separate parameters!
+     *
+     * AFTER (OOP):
+     *   $customer = new Customer();
+     *   $customer->email = "john@example.com";
+     *   $customer->firstName = "John";
+     *   $customer->save();  // All data is INSIDE the object
+     */
+    public function save(): bool {
+        $conn = self::getDb();
+
+        $sql = "INSERT INTO customer
+                (email, first_name, last_name, street_address, city, state, zip_code, phone_number, customer_password)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        $statement = mysqli_prepare($conn, $sql);
+
+        mysqli_stmt_bind_param(
+            $statement,
+            "sssssssss",
+            $this->email,
+            $this->firstName,
+            $this->lastName,
+            $this->streetAddress,
+            $this->city,
+            $this->state,
+            $this->zipCode,
+            $this->phoneNumber,
+            $this->password
+        );
+
+        $result = mysqli_stmt_execute($statement);
+
+        if ($result) {
+            // Get the auto-generated ID
+            $this->customerId = mysqli_insert_id($conn);
+        }
+
+        return $result;
+    }
+
+    /**
+     * READ (one) - Find a customer by ID
+     *
+     * BEFORE (procedural):
+     *   $customerArray = getCustomerById(5);  // Returns an array
+     *
+     * AFTER (OOP):
+     *   $customer = Customer::findById(5);    // Returns a Customer OBJECT
+     *   echo $customer->firstName;            // With autocomplete!
+     *
+     * Note: "static" means you call it on the CLASS, not an object:
+     *       Customer::findById(5)  not  $customer->findById(5)
+     */
+    public static function findById(int $id): ?Customer {
+        $conn = self::getDb();
+
+        $sql = "SELECT customer_id, email, first_name, last_name,
+                       street_address, city, state, zip_code, phone_number
+                FROM customer
+                WHERE customer_id = ?";
+
+        $statement = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($statement, "i", $id);
+        mysqli_stmt_execute($statement);
+
+        $result = mysqli_stmt_get_result($statement);
+        $row = mysqli_fetch_assoc($result);
+
+        if ($row === null) {
+            return null;  // Customer not found
+        }
+
+        // Convert the array to a Customer object
+        return self::fromArray($row);
+    }
+
+    /**
+     * READ (all) - Get all customers
+     *
+     * BEFORE (procedural):
+     *   $customers = getAllCustomers();  // Array of arrays
+     *   echo $customers[0]["first_name"];
+     *
+     * AFTER (OOP):
+     *   $customers = Customer::findAll();  // Array of Customer OBJECTS
+     *   echo $customers[0]->firstName;     // With autocomplete & type safety!
+     */
+    public static function findAll(): array {
+        $conn = self::getDb();
+
+        $sql = "SELECT customer_id, email, first_name, last_name,
+                       street_address, city, state, zip_code, phone_number
+                FROM customer
+                ORDER BY last_name, first_name";
+
+        $result = mysqli_query($conn, $sql);
+
+        $customers = [];
+
+        while ($row = mysqli_fetch_assoc($result)) {
+            $customers[] = self::fromArray($row);  // Convert each row to an object
+        }
+
+        return $customers;
+    }
+
+    /**
+     * UPDATE - Save changes to an existing customer
+     *
+     * BEFORE (procedural):
+     *   updateCustomer($id, $email, $firstName, ...);  // 9 parameters again!
+     *
+     * AFTER (OOP):
+     *   $customer = Customer::findById(5);
+     *   $customer->email = "newemail@example.com";
+     *   $customer->update();  // Just call update - it knows its own data!
+     */
+    public function update(): bool {
+        $conn = self::getDb();
+
+        $sql = "UPDATE customer
+                SET email = ?, first_name = ?, last_name = ?,
+                    street_address = ?, city = ?, state = ?,
+                    zip_code = ?, phone_number = ?
+                WHERE customer_id = ?";
+
+        $statement = mysqli_prepare($conn, $sql);
+
+        mysqli_stmt_bind_param(
+            $statement,
+            "ssssssssi",
+            $this->email,
+            $this->firstName,
+            $this->lastName,
+            $this->streetAddress,
+            $this->city,
+            $this->state,
+            $this->zipCode,
+            $this->phoneNumber,
+            $this->customerId
+        );
+
+        return mysqli_stmt_execute($statement);
+    }
+
+    /**
+     * DELETE - Remove this customer from the database
+     *
+     * USAGE:
+     *   $customer = Customer::findById(5);
+     *   $customer->delete();  // Gone!
+     */
+    public function delete(): bool {
+        $conn = self::getDb();
+
+        $sql = "DELETE FROM customer WHERE customer_id = ?";
+
+        $statement = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($statement, "i", $this->customerId);
+
+        return mysqli_stmt_execute($statement);
+    }
+
+    // ==================== HELPER METHODS ====================
+    // Bonus of classes: you can add useful methods!
+
+    /**
+     * Get full name (something you can't do with arrays!)
+     */
+    public function getFullName(): string {
+        return $this->firstName . " " . $this->lastName;
+    }
+
+    /**
+     * Get formatted address
+     */
+    public function getFullAddress(): string {
+        return "{$this->streetAddress}, {$this->city}, {$this->state} {$this->zipCode}";
+    }
+
+    /**
+     * Convert a database row (array) to a Customer object
+     * This is PRIVATE - only used inside this class
+     */
+    private static function fromArray(array $row): Customer {
+        $customer = new Customer();
+        $customer->customerId = (int) $row["customer_id"];
+        $customer->email = $row["email"];
+        $customer->firstName = $row["first_name"];
+        $customer->lastName = $row["last_name"];
+        $customer->streetAddress = $row["street_address"];
+        $customer->city = $row["city"];
+        $customer->state = $row["state"];
+        $customer->zipCode = $row["zip_code"];
+        $customer->phoneNumber = $row["phone_number"];
+        return $customer;
+    }
+}
+
+/*
+ * ==================== COMPLETE USAGE EXAMPLES ====================
+ *
+ * // CREATE a new customer
+ * $customer = new Customer();
+ * $customer->email = "jane@example.com";
+ * $customer->firstName = "Jane";
+ * $customer->lastName = "Smith";
+ * $customer->streetAddress = "123 Main St";
+ * $customer->city = "Richmond";
+ * $customer->state = "VA";
+ * $customer->zipCode = "23220";
+ * $customer->phoneNumber = "555-1234";
+ * $customer->password = "secret123";
+ * $customer->save();
+ * echo "Created customer with ID: " . $customer->customerId;
+ *
+ * // READ one customer
+ * $customer = Customer::findById(1);
+ * echo $customer->getFullName();  // "Jane Smith"
+ *
+ * // READ all customers
+ * $allCustomers = Customer::findAll();
+ * foreach ($allCustomers as $c) {
+ *     echo $c->getFullName() . "\n";
+ * }
+ *
+ * // UPDATE a customer
+ * $customer = Customer::findById(1);
+ * $customer->email = "jane.smith@newcompany.com";
+ * $customer->update();
+ *
+ * // DELETE a customer
+ * $customer = Customer::findById(1);
+ * $customer->delete();
+ */

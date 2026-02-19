@@ -1,0 +1,247 @@
+<?php
+/**
+ * SIDE-BY-SIDE COMPARISON: Arrays vs Classes
+ *
+ * This file shows the SAME operations done both ways
+ * so you can see the difference clearly.
+ */
+
+// Include our new classes
+require_once __DIR__ . '/Customer.php';
+require_once __DIR__ . '/Employee.php';
+require_once __DIR__ . '/Complaint.php';
+
+echo "=== COMPARISON: Arrays (Procedural) vs Classes (OOP) ===\n\n";
+
+// ============================================================
+// EXAMPLE 1: CREATE A NEW CUSTOMER
+// ============================================================
+
+echo "--- CREATE A NEW CUSTOMER ---\n\n";
+
+echo "ARRAY WAY (your teammates' code):\n";
+echo <<<'CODE'
+insertCustomer(
+    "jane@email.com",     // What's this? Have to check function signature
+    "Jane",               // Is this first or last name?
+    "Doe",
+    "123 Main St",
+    "Richmond",
+    "VA",
+    "23220",
+    "555-1234",
+    "password123"
+);
+// 9 parameters! Easy to mix up the order.
+CODE;
+
+echo "\n\nCLASS WAY (new code):\n";
+echo <<<'CODE'
+$customer = new Customer();
+$customer->email = "jane@email.com";      // Crystal clear what each value is
+$customer->firstName = "Jane";            // IDE autocomplete helps you
+$customer->lastName = "Doe";              // Can't put city in email field by accident
+$customer->streetAddress = "123 Main St";
+$customer->city = "Richmond";
+$customer->state = "VA";
+$customer->zipCode = "23220";
+$customer->phoneNumber = "555-1234";
+$customer->password = "password123";
+$customer->save();                        // All data travels with the object
+CODE;
+
+echo "\n\n";
+
+// ============================================================
+// EXAMPLE 2: READ AND DISPLAY A CUSTOMER
+// ============================================================
+
+echo "--- READ AND DISPLAY A CUSTOMER ---\n\n";
+
+echo "ARRAY WAY:\n";
+echo <<<'CODE'
+$customer = getCustomerById(5);
+echo $customer["first_name"];           // Must remember exact key names
+echo $customer["frist_name"];           // TYPO! No error, just empty string
+echo $customer["first_name"] . " " . $customer["last_name"];  // Verbose
+CODE;
+
+echo "\n\nCLASS WAY:\n";
+echo <<<'CODE'
+$customer = Customer::findById(5);
+echo $customer->firstName;              // IDE autocomplete shows all properties
+echo $customer->fristName;              // TYPO! PHP throws an error - catches bugs!
+echo $customer->getFullName();          // Reusable method - cleaner code
+CODE;
+
+echo "\n\n";
+
+// ============================================================
+// EXAMPLE 3: UPDATE A CUSTOMER
+// ============================================================
+
+echo "--- UPDATE A CUSTOMER ---\n\n";
+
+echo "ARRAY WAY:\n";
+echo <<<'CODE'
+// First read the customer as an array
+$customer = getCustomerById(5);
+
+// Now we have to pass ALL values again, even unchanged ones
+updateCustomer(
+    $customer["customer_id"],
+    "newemail@example.com",              // Changed this
+    $customer["first_name"],             // Passing back unchanged
+    $customer["last_name"],              // Passing back unchanged
+    $customer["street_address"],         // Passing back unchanged
+    $customer["city"],                   // Passing back unchanged
+    $customer["state"],                  // Passing back unchanged
+    $customer["zip_code"],               // Passing back unchanged
+    $customer["phone_number"]            // Passing back unchanged
+);
+// Tedious! 9 parameters for changing 1 field.
+CODE;
+
+echo "\n\nCLASS WAY:\n";
+echo <<<'CODE'
+$customer = Customer::findById(5);        // Get the customer object
+$customer->email = "newemail@example.com"; // Change just what you need
+$customer->update();                       // Object knows all its own data!
+// Clean! Only touch what you're changing.
+CODE;
+
+echo "\n\n";
+
+// ============================================================
+// EXAMPLE 4: LOOP THROUGH ALL CUSTOMERS
+// ============================================================
+
+echo "--- DISPLAY ALL CUSTOMERS ---\n\n";
+
+echo "ARRAY WAY:\n";
+echo <<<'CODE'
+$customers = getAllCustomers();  // Array of arrays
+
+foreach ($customers as $customer) {
+    echo $customer["first_name"] . " " . $customer["last_name"];
+    echo " - " . $customer["email"];
+    echo " - " . $customer["city"] . ", " . $customer["state"];
+    echo "\n";
+}
+CODE;
+
+echo "\n\nCLASS WAY:\n";
+echo <<<'CODE'
+$customers = Customer::findAll();  // Array of Customer objects
+
+foreach ($customers as $customer) {
+    echo $customer->getFullName();        // Method does the work
+    echo " - " . $customer->email;
+    echo " - " . $customer->getFullAddress();  // Another helpful method!
+    echo "\n";
+}
+CODE;
+
+echo "\n\n";
+
+// ============================================================
+// EXAMPLE 5: COMPLAINT WORKFLOW
+// ============================================================
+
+echo "--- COMPLETE COMPLAINT WORKFLOW ---\n\n";
+
+echo "ARRAY WAY:\n";
+echo <<<'CODE'
+// Create complaint
+insertComplaint(1, 2, 3, "Internet is slow");
+
+// Get all open complaints
+$complaints = getOpenComplaintsWithNames();
+
+// Display them
+foreach ($complaints as $c) {
+    echo $c["complaint_type_name"] . ": ";
+    echo $c["customer_first_name"] . " " . $c["customer_last_name"];
+    echo " (Assigned to: " . ($c["employee_first_name"] ?? "Nobody") . ")";
+    echo "\n";
+}
+
+// Assign to technician
+assignComplaintToTechnician(1, 5);
+
+// Technician updates it
+updateComplaintTechnicianFields(1, "Checked router", "closed", "2024-01-15", "Reset modem");
+CODE;
+
+echo "\n\nCLASS WAY:\n";
+echo <<<'CODE'
+// Create complaint
+$complaint = new Complaint();
+$complaint->customerId = 1;
+$complaint->productServiceId = 2;
+$complaint->complaintTypeId = 3;
+$complaint->description = "Internet is slow";
+$complaint->save();
+
+// Get all open complaints
+$complaints = Complaint::findOpenWithNames();
+
+// Display them (with helpful methods!)
+foreach ($complaints as $c) {
+    echo $c->complaintTypeName . ": ";
+    echo $c->getCustomerFullName();
+    echo " (Assigned to: " . $c->getTechnicianFullName() . ")";  // Returns "Unassigned" if null
+    echo "\n";
+}
+
+// Assign to technician (method on the object!)
+$complaint = Complaint::findById(1);
+$complaint->assignTo(5);
+
+// Technician updates it
+$complaint->technicianNotes = "Checked router";
+$complaint->status = "closed";
+$complaint->resolutionDate = "2024-01-15";
+$complaint->resolutionNotes = "Reset modem";
+$complaint->updateTechnicianFields();
+CODE;
+
+echo "\n\n";
+
+// ============================================================
+// SUMMARY
+// ============================================================
+
+echo "=== SUMMARY: WHY CLASSES WIN ===\n\n";
+
+echo <<<'SUMMARY'
+1. TYPE SAFETY
+   - Arrays: $customer["frist_name"] = silent bug
+   - Classes: $customer->fristName = PHP error catches it!
+
+2. IDE SUPPORT
+   - Arrays: Must memorize all key names
+   - Classes: Autocomplete shows all properties/methods
+
+3. ENCAPSULATION
+   - Arrays: Data and functions are separate
+   - Classes: Data and methods live together
+
+4. METHODS
+   - Arrays: Repeat "first_name . ' ' . last_name" everywhere
+   - Classes: Call getFullName() once, use everywhere
+
+5. READABILITY
+   - Arrays: insertCustomer($a, $b, $c, $d, $e, $f, $g, $h, $i) - what's what?
+   - Classes: $customer->email = "..." - crystal clear
+
+6. REUSABILITY
+   - Arrays: Copy/paste similar code for each table
+   - Classes: Consistent pattern, easy to extend
+
+7. MAINTENANCE
+   - Arrays: Change a column name = update MANY files
+   - Classes: Change it in ONE class, done
+SUMMARY;
+
+echo "\n";
