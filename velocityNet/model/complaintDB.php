@@ -26,6 +26,7 @@ class ComplaintDB {
         );
 
         $complaint->setComplaintId((int)$row["complaint_id"]);
+        $complaint->setImagePath($row["complaint_image"] == null ? "" : $row["complaint_image"]);
         $complaint->setTechnicianNotes($row["technician_notes"] == null ? "" : $row["technician_notes"]);
         $complaint->setResolutionDate($row["resolution_date"] == null ? "" : $row["resolution_date"]);
         $complaint->setResolutionNotes($row["resolution_notes"] == null ? "" : $row["resolution_notes"]);
@@ -41,7 +42,7 @@ class ComplaintDB {
     }
 
     //insert a new record
-    public static function insertComplaint($customerIdNumber, $productServiceIdNumber, $complaintTypeIdNumber, $complaintDescriptionText) {
+    public static function insertComplaint($customerIdNumber, $productServiceIdNumber, $complaintTypeIdNumber, $complaintDescriptionText, $imagePathText) {
 
         $db = new Database();
         $conn = $db->getDbConn();
@@ -54,13 +55,13 @@ class ComplaintDB {
             employee_id starts as null until an admin assigns a technician.
         */
         $sql = "insert into complaints
-                (customer_id, product_service_id, complaint_type_id, description, status)
-                values (?, ?, ?, ?, 'open')";
+                (customer_id, product_service_id, complaint_type_id, description, complaint_image, status)
+                values (?, ?, ?, ?, ?, 'open')";
 
         $statement = mysqli_prepare($conn, $sql);
         if ($statement == false) return false;
 
-        mysqli_stmt_bind_param($statement, "iiis", $customerIdNumber, $productServiceIdNumber, $complaintTypeIdNumber, $complaintDescriptionText);
+        mysqli_stmt_bind_param($statement, "iiiss", $customerIdNumber, $productServiceIdNumber, $complaintTypeIdNumber, $complaintDescriptionText, $imagePathText);
         return mysqli_stmt_execute($statement);
     }
 
@@ -83,6 +84,7 @@ class ComplaintDB {
                        c.product_service_id,
                        c.complaint_type_id,
                        c.description,
+                       c.complaint_image,
                        c.status,
                        c.technician_notes,
                        c.resolution_date,
@@ -129,6 +131,7 @@ class ComplaintDB {
                        c.product_service_id,
                        c.complaint_type_id,
                        c.description,
+                       c.complaint_image,
                        c.status,
                        c.technician_notes,
                        c.resolution_date,
@@ -176,6 +179,7 @@ class ComplaintDB {
                        c.product_service_id,
                        c.complaint_type_id,
                        c.description,
+                       c.complaint_image,
                        c.status,
                        c.technician_notes,
                        c.resolution_date,
@@ -244,6 +248,7 @@ class ComplaintDB {
                        c.product_service_id,
                        c.complaint_type_id,
                        c.description,
+                       c.complaint_image,
                        c.status,
                        c.technician_notes,
                        c.resolution_date,
@@ -297,6 +302,7 @@ class ComplaintDB {
                        c.product_service_id,
                        c.complaint_type_id,
                        c.description,
+                       c.complaint_image,
                        c.status,
                        c.technician_notes,
                        c.resolution_date,
@@ -398,24 +404,116 @@ class ComplaintDB {
 
         return $list;
     }
-}
 
-//insert a new record
-function insertComplaint($customerIdNumber, $productServiceIdNumber, $complaintTypeIdNumber, $complaintDescriptionText) { return ComplaintDB::insertComplaint($customerIdNumber, $productServiceIdNumber, $complaintTypeIdNumber, $complaintDescriptionText); }
-//get all complaints with names
-function getAllComplaintsWithNames() { return ComplaintDB::getAllComplaintsWithNames(); }
-//get open complaints with names
-function getOpenComplaintsWithNames() { return ComplaintDB::getOpenComplaintsWithNames(); }
-//get unassigned open complaints with names
-function getUnassignedOpenComplaintsWithNames() { return ComplaintDB::getUnassignedOpenComplaintsWithNames(); }
-//run assign complaint to technician
-function assignComplaintToTechnician($complaintIdNumber, $employeeIdNumber) { return ComplaintDB::assignComplaintToTechnician($complaintIdNumber, $employeeIdNumber); }
-//get complaints by employee id with names
-function getComplaintsByEmployeeIdWithNames($employeeIdNumber) { return ComplaintDB::getComplaintsByEmployeeIdWithNames($employeeIdNumber); }
-//get complaint by id
-function getComplaintById($complaintIdNumber) { return ComplaintDB::getComplaintById($complaintIdNumber); }
-//update an existing record
-function updateComplaintTechnicianFields($complaintIdNumber, $technicianNotesText, $statusText, $resolutionDateText, $resolutionNotesText) { return ComplaintDB::updateComplaintTechnicianFields($complaintIdNumber, $technicianNotesText, $statusText, $resolutionDateText, $resolutionNotesText); }
-//get technician open complaint counts
-function getTechnicianOpenComplaintCounts() { return ComplaintDB::getTechnicianOpenComplaintCounts(); }
+    //get complaints by customer id
+    public static function getComplaintsByCustomerIdWithNames($customerIdNumber) {
+
+        $db = new Database();
+        $conn = $db->getDbConn();
+        if ($conn == false) return array();
+
+        /*
+            SQL pulls complaint rows for one customer.
+            Joins other tables so the list can display names.
+            Orders by newest complaint first.
+        */
+        $sql = "select c.complaint_id,
+                       c.customer_id,
+                       c.employee_id,
+                       c.product_service_id,
+                       c.complaint_type_id,
+                       c.description,
+                       c.complaint_image,
+                       c.status,
+                       c.technician_notes,
+                       c.resolution_date,
+                       c.resolution_notes,
+                       c.created_at,
+                       concat(cu.first_name, ' ', cu.last_name) customer_name,
+                       concat(e.first_name, ' ', e.last_name) employee_name,
+                       ps.product_service_name,
+                       ct.complaint_type_name
+                from complaints c
+                join customer cu on c.customer_id = cu.customer_id
+                left join employees e on c.employee_id = e.employee_id
+                join products_services ps on c.product_service_id = ps.product_service_id
+                join complaint_types ct on c.complaint_type_id = ct.complaint_type_id
+                where c.customer_id = ?
+                order by c.complaint_id desc";
+
+        $statement = mysqli_prepare($conn, $sql);
+        if ($statement == false) return array();
+
+        mysqli_stmt_bind_param($statement, "i", $customerIdNumber);
+        if (mysqli_stmt_execute($statement) == false) return array();
+
+        $result = mysqli_stmt_get_result($statement);
+        $list = array();
+
+        if ($result != false) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $list[] = self::rowToComplaintWithNames($row);
+            }
+        }
+
+        return $list;
+    }
+
+
+    // Delete one complaint by id.
+    public static function deleteComplaint($complaintIdNumber) {
+
+        $db = new Database();
+        $conn = $db->getDbConn();
+        if ($conn == false) return false;
+
+        $sql = "delete from complaints where complaint_id = ?";
+
+        $statement = mysqli_prepare($conn, $sql);
+        if ($statement == false) return false;
+
+        mysqli_stmt_bind_param($statement, "i", $complaintIdNumber);
+        mysqli_stmt_execute($statement);
+
+        return (mysqli_stmt_affected_rows($statement) > 0);
+    }
+
+    // Delete all complaints for a customer.
+    public static function deleteComplaintsByCustomerId($customerIdNumber) {
+
+        $db = new Database();
+        $conn = $db->getDbConn();
+        if ($conn == false) return false;
+
+        $sql = "delete from complaints where customer_id = ?";
+
+        $statement = mysqli_prepare($conn, $sql);
+        if ($statement == false) return false;
+
+        mysqli_stmt_bind_param($statement, "i", $customerIdNumber);
+        mysqli_stmt_execute($statement);
+
+        // Zero rows affected is ok (customer may have no complaints).
+        return (mysqli_stmt_errno($statement) === 0);
+    }
+
+    // Unassign an employee from any complaints before deleting that employee.
+    public static function clearEmployeeFromComplaints($employeeIdNumber) {
+
+        $db = new Database();
+        $conn = $db->getDbConn();
+        if ($conn == false) return false;
+
+        $sql = "update complaints set employee_id = null where employee_id = ?";
+
+        $statement = mysqli_prepare($conn, $sql);
+        if ($statement == false) return false;
+
+        mysqli_stmt_bind_param($statement, "i", $employeeIdNumber);
+        mysqli_stmt_execute($statement);
+
+        return (mysqli_stmt_errno($statement) === 0);
+    }
+
+}
 ?>

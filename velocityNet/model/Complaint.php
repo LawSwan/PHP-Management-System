@@ -11,6 +11,7 @@ class Complaint {
     private $productServiceId;
     private $complaintTypeId;
     private $description;
+    private $imagePath;
     private $status;
 
     private $technicianNotes;
@@ -33,6 +34,7 @@ class Complaint {
         $this->productServiceId = $productServiceId;
         $this->complaintTypeId = $complaintTypeId;
         $this->description = $description;
+        $this->imagePath = "";
         $this->status = $status;
 
         // Technician fields start empty and are set later.
@@ -71,6 +73,10 @@ class Complaint {
     
     public function getDescription() { return $this->description; }
     public function setDescription($value) { $this->description = $value; }
+
+    //optional image path saved with a complaint
+    public function getImagePath() { return $this->imagePath; }
+    public function setImagePath($value) { $this->imagePath = $value; }
 
     
     public function getStatus() { return $this->status; }

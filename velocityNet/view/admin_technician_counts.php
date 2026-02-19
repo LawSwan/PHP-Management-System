@@ -1,4 +1,9 @@
 <?php
+require_once(__DIR__ . "/../util/security.php");
+
+Security::checkHTTPS();
+Security::checkAuthority("admin");
+
 // Admin Technician Counts page.
 // Shows open complaint counts per technician.
 
@@ -83,6 +88,7 @@ require_once("header.php");
             </thead>
             <tbody class="divide-y divide-gray-700">
 <?php //loop through countList and build output ?>
+<!-- Loop through list returned from controller -->
                 <?php foreach ($countList as $countRow) { ?>
                     <tr class="hover:bg-gray-700/30 transition-colors duration-200">
                         <td class="px-6 py-4 whitespace-nowrap">

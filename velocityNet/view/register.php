@@ -3,6 +3,7 @@
 // Adds a customer account.
 
 require_once(__DIR__ . "/../controller/customer_controller.php");
+require_once(__DIR__ . "/../util/password_validator.php");
 
 $errorMessage = "";
 $successMessage = "";
@@ -33,19 +34,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($emailText == "" || $firstNameText == "" || $lastNameText == "" || $passwordText == "") {
         $errorMessage .= "Fill out the required fields.<br>";  
     }
-    //password complexity validation:
-    // Minimum length 8, at least 1 uppercase, 1 lowercase, 1 special character.
-    if (strlen($passwordText) <8) {
-        $errorMessage .= "Password must be at least 8 characters long.<br>";
-    }
-    if (!preg_match('/[A-Z]/', $passwordText)) {
-        $errorMessage .= "Password must contain at least 1 uppercase letter.<br>";
-    }
-    if (!preg_match('/[a-z]/', $passwordText)) {
-        $errorMessage .= "Passowrd must contain at least 1 lowercase letter.<br>";
-    }
-    if (!preg_match('/[^a-zA-Z0-9]/', $passwordText)) {
-        $errorMessage .= "Password must contain at least 1 special character.<br>";
+    // Password rules.
+    $passwordMessages = PasswordValidator::getMessages($passwordText);
+    if (count($passwordMessages) > 0) {
+        foreach ($passwordMessages as $msg) {
+            $errorMessage .= $msg . "<br>";
+        }
     }
     if($errorMessage == "") {
         $ok = CustomerController::addCustomer(

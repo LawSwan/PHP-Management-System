@@ -1,10 +1,18 @@
 <?php
+require_once(__DIR__ . "/../util/security.php");
+
+Security::checkHTTPS();
+Security::checkAuthority("tech");
+
 // Technician Complaint List page.
 // Shows complaints assigned to a technician.
 
 require_once(__DIR__ . "/../controller/complaint_controller.php");
 
-$employeeIdNumber = 1; // hardcoded until login is wired up
+Security::startSession();
+
+$employeeIdNumber = 0;
+if (isset($_SESSION["employee_id"])) $employeeIdNumber = (int)$_SESSION["employee_id"];
 $complaintList = ComplaintController::getComplaintsByEmployeeIdWithNames($employeeIdNumber);
 
 require_once("header.php");
@@ -18,13 +26,6 @@ require_once("header.php");
     <p>Missing employee id.</p>
 
 <?php } else { ?>
-
-    <?php
-    // get complaints assigned to this technician.
-    $complaintList = getComplaintsByEmployeeIdWithNames($employeeIdNumber);
-    ?>
-
-    <p>Viewing complaints assigned to technician id: <?php echo $employeeIdNumber; ?></p>
 
     <?php if (count($complaintList) == 0) { ?>
 
@@ -46,6 +47,7 @@ require_once("header.php");
             </tr>
 
 <?php //loop through complaintList and build output ?>
+<!-- Loop through complaints returned from controller -->
             <?php foreach ($complaintList as $complaintRow) { ?>
                 <tr>
                     <td><?php echo $complaintRow->getComplaintId(); ?></td>

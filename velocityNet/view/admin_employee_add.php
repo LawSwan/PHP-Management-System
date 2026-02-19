@@ -1,4 +1,12 @@
 <?php
+require_once(__DIR__ . "/../util/security.php");
+
+Security::checkHTTPS();
+Security::checkAuthority("admin");
+
+
+
+// Admin Add Employee page. Creates a new employee account and saves the password as a hash.
 // Admin Employee Add page.
 // Inserts a new employee.
 
@@ -30,6 +38,7 @@ require_once("header.php");
 <?php if ($successMessage != "") { ?><p><?php echo $successMessage; ?></p><?php } ?>
 
 <!-- form to add a new employee -->
+<!-- Form fields -->
 <form method="post" action="admin_employee_add.php">
     <label>Email:</label><br>
     <input type="text" name="email"><br><br>
@@ -44,7 +53,7 @@ require_once("header.php");
 <!-- dropdown list built from database values -->
     <select name="role">
         <option value="">Select role</option>
-        <option value="admin">admin</option>
+        <option value="administrator">administrator</option>
         <option value="technician">technician</option>
     </select><br><br>
 

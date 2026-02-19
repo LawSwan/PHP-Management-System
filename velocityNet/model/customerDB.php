@@ -151,25 +151,77 @@ class CustomerDB {
 
         return mysqli_stmt_execute($statement);
     }
-}
 
-//insert a new record
-function insertCustomer($emailText, $firstNameText, $lastNameText, $streetAddressText, $cityText, $stateText, $zipCodeText, $phoneNumberText, $passwordText) {
-    return CustomerDB::insertCustomer($emailText, $firstNameText, $lastNameText, $streetAddressText, $cityText, $stateText, $zipCodeText, $phoneNumberText, $passwordText);
-}
+    //update customer password
+    public static function updateCustomerPassword($customerIdNumber, $passwordText) {
 
-//get all customers
-function getAllCustomers() {
-    return CustomerDB::getAllCustomers();
-}
+        $db = new Database();
+        $conn = $db->getDbConn();
+        if ($conn == false) return false;
 
-//get customer by id
-function getCustomerById($customerIdNumber) {
-    return CustomerDB::getCustomerById($customerIdNumber);
-}
+        /*
+            SQL updates the password for one customer.
+        */
+        $sql = "update customer
+                set customer_password = ?
+                where customer_id = ?";
 
-//update an existing record
-function updateCustomer($customerIdNumber, $emailText, $firstNameText, $lastNameText, $streetAddressText, $cityText, $stateText, $zipCodeText, $phoneNumberText) {
-    return CustomerDB::updateCustomer($customerIdNumber, $emailText, $firstNameText, $lastNameText, $streetAddressText, $cityText, $stateText, $zipCodeText, $phoneNumberText);
+        $statement = mysqli_prepare($conn, $sql);
+        if ($statement == false) return false;
+
+        mysqli_stmt_bind_param($statement, "si", $passwordText, $customerIdNumber);
+        return mysqli_stmt_execute($statement);
+    }
+
+    //get customer by email
+    public static function getCustomerByEmail($emailText) {
+
+        $db = new Database();
+        $conn = $db->getDbConn();
+        if ($conn == false) return null;
+
+        /*
+            SQL finds one customer row by email.
+            Used for login checks.
+        */
+        $sql = "select customer_id, email, first_name, last_name, street_address, city, state, zip_code, phone_number, customer_password
+                from customer
+                where email = ?
+                limit 1";
+
+        $statement = mysqli_prepare($conn, $sql);
+        if ($statement == false) return null;
+
+        mysqli_stmt_bind_param($statement, "s", $emailText);
+        if (mysqli_stmt_execute($statement) == false) return null;
+
+        $result = mysqli_stmt_get_result($statement);
+        if ($result == false) return null;
+
+        $row = mysqli_fetch_assoc($result);
+        if ($row == null) return null;
+
+        return self::rowToCustomer($row);
+    }
+
+
+    // Delete one customer by id.
+    public static function deleteCustomer($customerIdNumber) {
+
+        $db = new Database();
+        $conn = $db->getDbConn();
+        if ($conn == false) return false;
+
+        $sql = "delete from customer where customer_id = ?";
+
+        $statement = mysqli_prepare($conn, $sql);
+        if ($statement == false) return false;
+
+        mysqli_stmt_bind_param($statement, "i", $customerIdNumber);
+        mysqli_stmt_execute($statement);
+
+        return (mysqli_stmt_affected_rows($statement) > 0);
+    }
+
 }
 ?>

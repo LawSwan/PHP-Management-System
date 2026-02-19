@@ -8,46 +8,56 @@ class ComplaintController {
 
     // Customer/admin list.
     public static function getAllComplaintsWithNames() {
-        return getAllComplaintsWithNames();
+        return ComplaintDB::getAllComplaintsWithNames();
+    }
+
+    // Customer list by customer.
+    public static function getComplaintsByCustomerIdWithNames($customerIdNumber) {
+        return ComplaintDB::getComplaintsByCustomerIdWithNames((int)$customerIdNumber);
     }
 
     // Tech list by technician.
     public static function getComplaintsByEmployeeIdWithNames($employeeIdNumber) {
-        return getComplaintsByEmployeeIdWithNames((int)$employeeIdNumber);
+        return ComplaintDB::getComplaintsByEmployeeIdWithNames((int)$employeeIdNumber);
     }
 
     // Admin open list.
     public static function getOpenComplaintsWithNames() {
-        return getOpenComplaintsWithNames();
+        return ComplaintDB::getOpenComplaintsWithNames();
     }
 
     // Admin unassigned open list.
     public static function getUnassignedOpenComplaintsWithNames() {
-        return getUnassignedOpenComplaintsWithNames();
+        return ComplaintDB::getUnassignedOpenComplaintsWithNames();
     }
 
     // One complaint.
     public static function getComplaintById($complaintIdNumber) {
-        return getComplaintById((int)$complaintIdNumber);
+        return ComplaintDB::getComplaintById((int)$complaintIdNumber);
     }
 
     // Insert a complaint.
-    public static function addComplaint($customerIdNumber, $productServiceIdNumber, $complaintTypeIdNumber, $descriptionText) {
-        return insertComplaint((int)$customerIdNumber, (int)$productServiceIdNumber, (int)$complaintTypeIdNumber, $descriptionText);
+    public static function addComplaint($customerIdNumber, $productServiceIdNumber, $complaintTypeIdNumber, $descriptionText, $imagePathText) {
+        return ComplaintDB::insertComplaint((int)$customerIdNumber, (int)$productServiceIdNumber, (int)$complaintTypeIdNumber, $descriptionText, $imagePathText);
     }
 
     // Assign technician.
     public static function assignComplaintToTechnician($complaintIdNumber, $employeeIdNumber) {
-        return assignComplaintToTechnician((int)$complaintIdNumber, (int)$employeeIdNumber);
+        return ComplaintDB::assignComplaintToTechnician((int)$complaintIdNumber, (int)$employeeIdNumber);
     }
 
     // Update technician fields.
     public static function updateComplaintTechnicianFields($complaintIdNumber, $technicianNotesText, $statusText, $resolutionDateText, $resolutionNotesText) {
-        return updateComplaintTechnicianFields((int)$complaintIdNumber, $technicianNotesText, $statusText, $resolutionDateText, $resolutionNotesText);
+        return ComplaintDB::updateComplaintTechnicianFields((int)$complaintIdNumber, $technicianNotesText, $statusText, $resolutionDateText, $resolutionNotesText);
     }
 
     // Counts for technicians (admin report).
     public static function getTechnicianOpenComplaintCounts() {
-        return getTechnicianOpenComplaintCounts();
+        return ComplaintDB::getTechnicianOpenComplaintCounts();
+    }
+
+    // Delete one complaint.
+    public static function deleteComplaint($complaintIdNumber) {
+        return ComplaintDB::deleteComplaint((int)$complaintIdNumber);
     }
 }

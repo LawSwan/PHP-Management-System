@@ -88,15 +88,25 @@ class EmployeeDB {
         $conn = $db->getDbConn();
         if ($conn == false) return false;
 
-        
+        // user_id is required by the employees table.
+        // If a value is not collected on the form, build one from the email.
+        $userIdText = strtolower(trim($emailText));
+        $atPos = strpos($userIdText, "@");
+        if ($atPos !== false) $userIdText = substr($userIdText, 0, $atPos);
+        $userIdText = preg_replace("/[^a-z0-9_]/", "", $userIdText);
+        if ($userIdText === "") $userIdText = "user";
+
+        // phone_extension is optional.
+        $phoneExtensionText = "";
+
         $sql = "insert into employees
-                (email, first_name, last_name, role, employee_password)
-                values (?, ?, ?, ?, ?)";
+                (user_id, employee_password, first_name, last_name, email, phone_extension, level)
+                values (?, ?, ?, ?, ?, ?, ?)";
 
         $statement = mysqli_prepare($conn, $sql);
         if ($statement == false) return false;
 
-        mysqli_stmt_bind_param($statement, "sssss", $emailText, $firstNameText, $lastNameText, $roleText, $passwordText);
+        mysqli_stmt_bind_param($statement, "sssssss", $userIdText, $passwordText, $firstNameText, $lastNameText, $emailText, $phoneExtensionText, $roleText);
         return mysqli_stmt_execute($statement);
     }
 
@@ -113,7 +123,7 @@ class EmployeeDB {
             Password is not updated here because the edit form does not include it.
         */
         $sql = "update employees
-                set email = ?, first_name = ?, last_name = ?, role = ?
+                set email = ?, first_name = ?, last_name = ?, level = ?
                 where employee_id = ?";
 
         $statement = mysqli_prepare($conn, $sql);
@@ -143,14 +153,56 @@ class EmployeeDB {
         return mysqli_stmt_execute($statement);
     }
 
-}
 
-//get all employees
-function getAllEmployees() { return EmployeeDB::getAllEmployees(); }
-//get employee by id
-function getEmployeeById($employeeIdNumber) { return EmployeeDB::getEmployeeById($employeeIdNumber); }
-//insert a new record
-function insertEmployee($emailText, $firstNameText, $lastNameText, $roleText, $passwordText) { return EmployeeDB::insertEmployee($emailText, $firstNameText, $lastNameText, $roleText, $passwordText); }
-//update an existing record
-function updateEmployee($employeeIdNumber, $emailText, $firstNameText, $lastNameText, $roleText) { return EmployeeDB::updateEmployee($employeeIdNumber, $emailText, $firstNameText, $lastNameText, $roleText); }
+    //get employee by email
+    public static function getEmployeeByEmail($emailText) {
+
+        $db = new Database();
+        $conn = $db->getDbConn();
+        if ($conn == false) return null;
+
+        /*
+            SQL finds one employee row by email.
+            Used for login checks.
+        */
+        $sql = "select employee_id, email, first_name, last_name, level, employee_password
+                from employees
+                where email = ?
+                limit 1";
+
+        $statement = mysqli_prepare($conn, $sql);
+        if ($statement == false) return null;
+
+        mysqli_stmt_bind_param($statement, "s", $emailText);
+        if (mysqli_stmt_execute($statement) == false) return null;
+
+        $result = mysqli_stmt_get_result($statement);
+        if ($result == false) return null;
+
+        $row = mysqli_fetch_assoc($result);
+        if ($row == null) return null;
+
+        return self::rowToEmployee($row);
+    }
+
+
+    // Delete one employee by id.
+    public static function deleteEmployee($employeeIdNumber) {
+
+        $db = new Database();
+        $conn = $db->getDbConn();
+        if ($conn == false) return false;
+
+        $sql = "delete from employees where employee_id = ?";
+
+        $statement = mysqli_prepare($conn, $sql);
+        if ($statement == false) return false;
+
+        mysqli_stmt_bind_param($statement, "i", $employeeIdNumber);
+        mysqli_stmt_execute($statement);
+
+        return (mysqli_stmt_affected_rows($statement) > 0);
+    }
+
+}
 ?>

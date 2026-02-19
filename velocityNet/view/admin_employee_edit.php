@@ -1,4 +1,12 @@
 <?php
+require_once(__DIR__ . "/../util/security.php");
+
+Security::checkHTTPS();
+Security::checkAuthority("admin");
+
+
+
+// Admin Edit Employee page. Updates employee profile fields without changing the password.
 // Admin Employee Edit page.
 // Updates one employee record.
 
@@ -41,6 +49,7 @@ require_once("header.php");
 
 <?php if ($employeeRow != null) { ?>
 <!-- form to update an employee -->
+<!-- Form fields -->
 <form method="post" action="admin_employee_edit.php?employee_id=<?php echo $employeeRow->getEmployeeId(); ?>">
     <label>Email:</label><br>
     <input type="text" name="email" value="<?php echo $employeeRow->getEmail(); ?>"><br><br>

@@ -3,11 +3,11 @@ require_once(__DIR__ . "/../util/security.php");
 require_once(__DIR__ . "/../util/password_validator.php");
 
 Security::checkHTTPS();
-Security::checkAuthority("tech");
+Security::checkAuthority("admin");
 
-// Employee Profile page.
-// Allows a technician to change their password.
-// Uses the same password rules as registration.
+// Admin Profile page.
+// Allows an admin to change their password.
+// Validates the new password using the same rules as registration.
 
 require_once(__DIR__ . "/../controller/employee_controller.php");
 
@@ -26,7 +26,7 @@ $formMessage = "";
 $formMessageType = ""; // success | error
 
 // Handle form submit.
-// Verifies the current password, validates the new password, then saves the hash.
+// Reads inputs, validates, then updates the password if everything checks out.
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if (isset($_POST["current_password"])) $currentPasswordText = (string)$_POST["current_password"];
@@ -53,6 +53,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $formMessage = "Employee record not found.";
             $formMessageType = "error";
         } else if (!password_verify($currentPasswordText, $employee->getPasswordHash())) {
+            // Confirm the current password matches the stored hash.
+
             // Current password is verified against the stored hash.
 
             $currentPasswordError = "Current password is incorrect.";
@@ -79,7 +81,6 @@ require_once("header.php");
 ?>
 
 <!-- Page heading and password change form -->
-
 <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
     <h2 class="font-serif text-3xl text-[#f5f3eb] mb-2">Profile</h2>
@@ -99,7 +100,7 @@ require_once("header.php");
             <?php } ?>
         <?php } ?>
 
-        <form method="POST" action="technician_password_change.php" class="space-y-6" novalidate>
+        <form method="POST" action="admin_profile.php" class="space-y-6" novalidate>
 
             <div>
                 <label for="current_password" class="block text-sm font-medium text-stone-300 mb-2">Current password</label>

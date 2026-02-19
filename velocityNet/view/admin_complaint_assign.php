@@ -1,4 +1,9 @@
 <?php
+require_once(__DIR__ . "/../util/security.php");
+
+Security::checkHTTPS();
+Security::checkAuthority("admin");
+
 // Admin Complaint Assign page.
 // Lets admin assign a technician to a complaint.
 
@@ -71,6 +76,7 @@ require_once(__DIR__ . "/header.php");
     <select name="complaint_id">
         <option value="0">Select</option>
 
+<!-- Loop through complaints returned from controller -->
         <?php foreach ($complaintList as $complaintRow) { ?>
             <?php
             // Pre-select complaint if complaint_id is passed in URL or after submit.
@@ -93,6 +99,7 @@ require_once(__DIR__ . "/header.php");
     <select name="employee_id">
         <option value="0">Select</option>
 
+<!-- Loop through employees returned from controller -->
         <?php foreach ($technicianList as $technicianRow) { ?>
             <option value="<?php echo $technicianRow->getEmployeeId(); ?>">
                 <?php echo $technicianRow->getLastName(); ?>, <?php echo $technicianRow->getFirstName(); ?> (<?php echo $technicianRow->getEmail(); ?>)

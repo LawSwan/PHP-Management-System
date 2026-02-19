@@ -10,13 +10,7 @@ require_once("view/header.php");
     <div class="hero text-center py-16 md:py-24">
         <!-- Announcement Badge -->
         <div class="inline-flex items-center gap-2 px-4 py-2 bg-[#1d211a] border border-stone-700/50 rounded-full text-sm text-stone-400 mb-8">
-            <span>New features available</span>
-            <a href="view/sitemap.php" class="text-[#a8b89a] hover:text-[#f5f3eb] transition-colors flex items-center gap-1">
-                Learn more
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
-            </a>
+            <span>Welcome to VelocityNet support</span>
         </div>
 
         <!-- Hero Title -->
@@ -34,8 +28,8 @@ require_once("view/header.php");
             <a href="view/register.php" class="bg-[#1d211a] hover:bg-[#252a21] text-[#f5f3eb] px-6 py-3 rounded-lg text-sm font-medium border border-stone-600 hover:border-stone-500 transition-all">
                 Get started free
             </a>
-            <a href="view/sitemap.php" class="text-stone-400 hover:text-[#f5f3eb] text-sm font-medium flex items-center gap-2 transition-colors">
-                See how it works
+            <a href="view/login.php" class="text-stone-400 hover:text-[#f5f3eb] text-sm font-medium flex items-center gap-2 transition-colors">
+                Log in
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                 </svg>
@@ -131,49 +125,7 @@ require_once("view/header.php");
         </div>
     </div>
 
-    <!-- Quick Links Section  -->
-    <div class="max-w-5xl mx-auto px-4 pb-16">
-        <div class="bg-[#1d211a]/50 border border-stone-700/50 rounded-xl p-6">
-            <h3 class="font-serif text-xl text-[#f5f3eb] mb-6">Development Navigation</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Customer Links -->
-                <div>
-                    <h4 class="text-sm font-medium text-stone-300 mb-3">Customer</h4>
-                    <ul class="space-y-2">
-                        <li><a href="view/login.php" class="text-sm text-stone-500 hover:text-[#a8b89a] transition-colors">Login</a></li>
-                        <li><a href="view/register.php" class="text-sm text-stone-500 hover:text-[#a8b89a] transition-colors">Register</a></li>
-                        <li><a href="view/complaint_create.php" class="text-sm text-stone-500 hover:text-[#a8b89a] transition-colors">Enter Complaint</a></li>
-                        <li><a href="view/complaint_list.php" class="text-sm text-stone-500 hover:text-[#a8b89a] transition-colors">Complaint List</a></li>
-                    </ul>
-                </div>
-
-                <!-- Admin Links -->
-                <div>
-                    <h4 class="text-sm font-medium text-stone-300 mb-3">Admin</h4>
-                    <ul class="space-y-2">
-                        <li><a href="view/admin_customer_list.php" class="text-sm text-stone-500 hover:text-[#a8b89a] transition-colors">Customers</a></li>
-                        <li><a href="view/admin_employee_list.php" class="text-sm text-stone-500 hover:text-[#a8b89a] transition-colors">Employees</a></li>
-                        <li><a href="view/admin_complaint_open_list.php" class="text-sm text-stone-500 hover:text-[#a8b89a] transition-colors">Open Complaints</a></li>
-                        <li><a href="view/admin_complaint_unassigned_list.php" class="text-sm text-stone-500 hover:text-[#a8b89a] transition-colors">Unassigned Complaints</a></li>
-                        <li><a href="view/admin_technician_counts.php" class="text-sm text-stone-500 hover:text-[#a8b89a] transition-colors">Technician Counts</a></li>
-                        <li><a href="view/admin_complaint_assign.php" class="text-sm text-stone-500 hover:text-[#a8b89a] transition-colors">Assign Complaint</a></li>
-                    </ul>
-                </div>
-
-                <!-- Technician Links -->
-                <div>
-                    <h4 class="text-sm font-medium text-stone-300 mb-3">Technician</h4>
-                    <ul class="space-y-2">
-                        <li><a href="view/technician_complaint_list.php?employee_id=1" class="text-sm text-stone-500 hover:text-[#a8b89a] transition-colors">My Complaints (id 1)</a></li>
-                        <li><a href="view/sitemap.php" class="text-sm text-stone-500 hover:text-[#a8b89a] transition-colors">Site Map</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <?php
-    
 
 require_once("view/footer.php");
 ?>
